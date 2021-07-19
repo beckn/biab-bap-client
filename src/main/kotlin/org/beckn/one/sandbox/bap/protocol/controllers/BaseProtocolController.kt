@@ -14,18 +14,18 @@ open class BaseProtocolController<Protocol: ProtocolResponse> @Autowired constru
 ) {
   val log = LoggerFactory.getLogger(BaseProtocolController::class.java)
 
-  fun onCallback(@RequestBody searchResponse: Protocol) = storage
-    .save(searchResponse)
+  fun onCallback(@RequestBody callBackActionResponse: Protocol) = storage
+    .save(callBackActionResponse)
     .fold(
       ifLeft = {
         log.error("Error during persisting. Error: {}", it)
         ResponseEntity
           .status(it.status().value())
-          .body(ProtocolAckResponse(searchResponse.context, it.message(), it.error()))
+          .body(ProtocolAckResponse(callBackActionResponse.context, it.message(), it.error()))
       },
       ifRight = {
-        log.info("Successfully persisted response with message id: ${searchResponse.context?.messageId}")
-        ResponseEntity.ok(ProtocolAckResponse(searchResponse.context, ResponseMessage.ack()))
+        log.info("Successfully persisted response with message id: ${callBackActionResponse.context?.messageId}")
+        ResponseEntity.ok(ProtocolAckResponse(callBackActionResponse.context, ResponseMessage.ack()))
       }
     )
 }

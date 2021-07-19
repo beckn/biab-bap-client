@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @AutoConfigureMockMvc
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
-class InitControllerSpec @Autowired constructor(
+class InitializeOrderControllerSpec @Autowired constructor(
   val mockMvc: MockMvc,
   val objectMapper: ObjectMapper,
   val contextFactory: ContextFactory,
@@ -147,7 +147,34 @@ class InitControllerSpec @Autowired constructor(
         verifyThatSubscriberLookupApiWasNotInvoked(provider2Api)
       }
 
-      it("should invoke provide select api and save message") {
+      it("should return null when cart items are empty") {
+        val initRequestForTest = OrderRequestDto(
+          message = OrderDtoFactory.create(
+            bpp1_id = providerApi.baseUrl(),
+            provider1_id = "padma coffee works",
+            items = emptyList()
+          ), context = contextFactory.create()
+        )
+        providerApi
+          .stubFor(
+            WireMock.post("/init").willReturn(
+              WireMock.okJson(objectMapper.writeValueAsString(ResponseFactory.getDefault(contextFactory.create())))
+            )
+          )
+
+        val initializeOrderResponseString = invokeInitializeOrder(initRequestForTest)
+          .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+          .andReturn()
+          .response.contentAsString
+
+        val confirmOrderResponse =
+          verifyInitResponseMessage(initializeOrderResponseString, initRequestForTest, ResponseMessage.ack())
+        verifyThatMessageWasNotPersisted(confirmOrderResponse)
+        verifyThatBppInitApiWasNotInvoked(providerApi)
+        verifyThatSubscriberLookupApiWasNotInvoked(registryBppLookupApi)
+      }
+
+      it("should invoke provide init api and save message") {
         providerApi
           .stubFor(
             post("/init")

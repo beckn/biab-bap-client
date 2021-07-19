@@ -1,6 +1,6 @@
 package org.beckn.one.sandbox.bap.configurations
 
-import org.beckn.one.sandbox.bap.message.entities.OnConfirm
+import org.beckn.one.sandbox.bap.message.entities.OnConfirmDao
 import org.beckn.one.sandbox.bap.message.entities.OnInitDao
 import org.beckn.one.sandbox.bap.message.entities.OnSearchDao
 import org.beckn.one.sandbox.bap.message.entities.OnSelectDao
@@ -40,7 +40,7 @@ class ProtocolServicesConfiguration {
 
   @Bean
   fun onConfirmStorageService(
-    @Autowired responseRepo: BecknResponseRepository<OnConfirm>,
-    @Autowired  mapper: GenericResponseMapper<ProtocolOnConfirm, OnConfirm>
+    @Autowired responseRepo: BecknResponseRepository<OnConfirmDao>,
+    @Autowired  mapper: GenericResponseMapper<ProtocolOnConfirm, OnConfirmDao>
   ): ResponseStorageService<ProtocolOnConfirm> = ResponseStorageServiceImpl(responseRepo, mapper)
 }

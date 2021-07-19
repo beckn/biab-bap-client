@@ -38,7 +38,7 @@ data class OnInitMessageDao @Default constructor(
   val initialized: OnInitMessageInitializedDao? = null
 )
 
-data class OnConfirm @Default constructor(
+data class OnConfirmDao @Default constructor(
   override val context: ContextDao,
   val message: OnConfirmMessage? = null,
   override val error: ErrorDao? = null

@@ -55,9 +55,9 @@ interface OnInitResponseMapper : GenericResponseMapper<ProtocolOnInit, OnInitDao
   injectionStrategy = InjectionStrategy.CONSTRUCTOR,
   uses = [DateMapper::class]
 )
-interface OnConfirmResponseMapper : GenericResponseMapper<ProtocolOnConfirm, OnConfirm> {
-  override fun entityToProtocol(entity: OnConfirm): ProtocolOnConfirm
-  override fun protocolToEntity(schema: ProtocolOnConfirm): OnConfirm
+interface OnConfirmResponseMapper : GenericResponseMapper<ProtocolOnConfirm, OnConfirmDao> {
+  override fun entityToProtocol(entity: OnConfirmDao): ProtocolOnConfirm
+  override fun protocolToEntity(schema: ProtocolOnConfirm): OnConfirmDao
 }
 
 @Component

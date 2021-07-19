@@ -2,7 +2,7 @@ package org.beckn.one.sandbox.bap.message.mappers
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.beckn.one.sandbox.bap.message.entities.OnConfirm
+import org.beckn.one.sandbox.bap.message.entities.OnConfirmDao
 import org.beckn.one.sandbox.bap.message.entities.OnConfirmMessage
 import org.beckn.one.sandbox.bap.message.factories.ProtocolContextFactory
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOrderFactory
@@ -27,7 +27,7 @@ class OnConfirmResponseMapperSpec @Autowired constructor(
     )
   )
 
-  private val entityResponse = OnConfirm(
+  private val entityResponse = OnConfirmDao(
     context = ProtocolContextFactory.fixedAsEntity(protocolResponse.context),
     message = OnConfirmMessage(
       ProtocolOrderFactory.createAsEntity(protocolResponse.message?.order)
