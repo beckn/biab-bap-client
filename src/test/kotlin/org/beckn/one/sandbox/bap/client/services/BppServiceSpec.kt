@@ -301,7 +301,7 @@ internal class BppServiceSpec : DescribeSpec() {
             )
           ),
           type = "home_delivery",
-          customer = HboCustomer(HboCustomer.HboPerson(name = "Test"))
+          customer = ProtocolCustomer(person = ProtocolPerson(name = "Test"))
         ),
         addOns = emptyList(),
         offers = emptyList()
@@ -344,7 +344,7 @@ internal class BppServiceSpec : DescribeSpec() {
             )
           ),
           type = "home_delivery",
-          customer = HboCustomer(HboCustomer.HboPerson(name = "Test"))
+          customer = ProtocolCustomer(person = ProtocolPerson(name = "Test"))
         ),
         addOns = emptyList(),
         offers = emptyList(),
