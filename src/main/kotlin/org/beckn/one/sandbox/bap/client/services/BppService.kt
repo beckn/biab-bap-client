@@ -257,7 +257,7 @@ class BppService @Autowired constructor(
               ), location = deliveryInfo.location
             ),
             type = "home_delivery",
-            customer = HboCustomer(HboCustomer.HboPerson(name = deliveryInfo.name))
+            customer = ProtocolCustomer(person = ProtocolPerson(name = deliveryInfo.name))
           ),
           addOns = emptyList(),
           offers = emptyList(),
