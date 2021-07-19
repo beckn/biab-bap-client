@@ -4,6 +4,7 @@ import org.beckn.protocol.schemas.ProtocolAckResponse
 import org.beckn.protocol.schemas.ProtocolInitRequest
 import org.beckn.protocol.schemas.ProtocolSearchRequest
 import org.beckn.protocol.schemas.ProtocolSelectRequest
+import org.beckn.protocol.schemas.ProtocolConfirmRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -17,4 +18,8 @@ interface BppServiceClient {
 
   @POST("init")
   fun init(@Body request: ProtocolInitRequest): Call<ProtocolAckResponse>
+
+  @POST("confirm")
+  fun confirm(@Body request: ProtocolConfirmRequest): Call<ProtocolAckResponse>
+
 }

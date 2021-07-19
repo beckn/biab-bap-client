@@ -14,7 +14,8 @@ data class OrderDto @Default constructor(
   val id: String? = null,
   val items: List<OrderItemDto>? = null,
   val deliveryInfo: DeliveryDto,
-  val billingInfo: ProtocolBilling
+  val billingInfo: ProtocolBilling,
+  val payment: OrderPayment? = null
 )
 
 data class OrderItemDto @Default constructor(

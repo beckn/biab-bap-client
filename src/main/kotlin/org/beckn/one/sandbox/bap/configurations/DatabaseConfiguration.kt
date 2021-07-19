@@ -41,9 +41,9 @@ class DatabaseConfiguration @Autowired constructor(
 
   @Bean
   fun onInitResponseRepo(@Autowired database: MongoDatabase): BecknResponseRepository<OnInitDao> =
-    BecknResponseRepository(database.getCollectionOfName("on_select"))
+    BecknResponseRepository(database.getCollectionOfName("on_init"))
 
   @Bean
-  fun onConfirmResponseRepo(@Autowired database: MongoDatabase): BecknResponseRepository<OnConfirm> =
+  fun onConfirmResponseRepo(@Autowired database: MongoDatabase): BecknResponseRepository<OnConfirmDao> =
     BecknResponseRepository(database.getCollectionOfName("on_confirm"))
 }

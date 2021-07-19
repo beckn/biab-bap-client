@@ -4,9 +4,8 @@ import arrow.core.Either
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.ints.shouldBeExactly
-import io.kotest.matchers.shouldBe
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
-import org.beckn.one.sandbox.bap.message.entities.OnConfirm
+import org.beckn.one.sandbox.bap.message.entities.OnConfirmDao
 import org.beckn.one.sandbox.bap.message.factories.ProtocolContextFactory
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOrderFactory
 import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
@@ -35,7 +34,7 @@ internal class ProtocolOnConfirmControllerSpec @Autowired constructor(
   @Autowired
   private val mapper: ObjectMapper,
   @Autowired
-  private val onConfirmResponseRepo: BecknResponseRepository<OnConfirm>,
+  private val onConfirmResponseRepo: BecknResponseRepository<OnConfirmDao>,
 ) : DescribeSpec() {
   private val postOnConfirmUrl = "/v1/on_confirm"
 

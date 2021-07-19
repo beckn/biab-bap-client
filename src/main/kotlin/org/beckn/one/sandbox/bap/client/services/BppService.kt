@@ -5,6 +5,7 @@ import arrow.core.Either.Left
 import arrow.core.Either.Right
 import org.beckn.one.sandbox.bap.client.dtos.DeliveryDto
 import org.beckn.one.sandbox.bap.client.dtos.OrderItemDto
+import org.beckn.one.sandbox.bap.client.dtos.OrderPayment
 import org.beckn.one.sandbox.bap.client.dtos.SearchCriteria
 import org.beckn.one.sandbox.bap.client.errors.bpp.BppError
 import org.beckn.one.sandbox.bap.client.external.provider.BppServiceClient
@@ -190,4 +191,84 @@ class BppService @Autowired constructor(
         ProtocolFulfillment(end = ProtocolFulfillmentEnd(location = ProtocolLocation(gps = criteria.location)))
       else -> null
     }
+
+  fun confirm(
+    context: ProtocolContext,
+    bppUri: String,
+    providerId: String,
+    billingInfo: ProtocolBilling,
+    items: List<OrderItemDto>,
+    providerLocation: ProtocolSelectMessageSelectedProviderLocations,
+    deliveryInfo: DeliveryDto,
+    payment: OrderPayment
+  ): Either<BppError, ProtocolAckResponse> {
+    return Either.catch {
+      log.info("Invoking Confirm API on BPP: {}", bppUri)
+      val bppServiceClient = bppServiceClientFactory.getClient(bppUri)
+      val httpResponse =
+        invokeBppConfirmApi(
+          bppServiceClient = bppServiceClient,
+          context = context,
+          providerId = providerId,
+          billingInfo = billingInfo,
+          providerLocation = providerLocation,
+          deliveryInfo = deliveryInfo,
+          items = items,
+          payment = payment
+        )
+      log.info("BPP confirm API response. Status: {}, Body: {}", httpResponse.code(), httpResponse.body())
+      return when {
+        isInternalServerError(httpResponse) -> Left(BppError.Internal)
+        isBodyNull(httpResponse) -> Left(BppError.NullResponse)
+        isAckNegative(httpResponse) -> Left(BppError.Nack)
+        else -> Right(httpResponse.body()!!)
+      }
+    }.mapLeft {
+      log.error("Error when initiating confirm", it)
+      BppError.Internal
+    }
+  }
+
+  private fun invokeBppConfirmApi(
+    bppServiceClient: BppServiceClient,
+    context: ProtocolContext,
+    providerId: String,
+    billingInfo: ProtocolBilling,
+    providerLocation: ProtocolSelectMessageSelectedProviderLocations,
+    deliveryInfo: DeliveryDto,
+    items: List<OrderItemDto>,
+    payment: OrderPayment
+  ): Response<ProtocolAckResponse> {
+    val confirmRequest = ProtocolConfirmRequest(
+      context = context,
+      ProtocolConfirmRequestMessage(
+        order = ProtocolOrder(
+          provider = ProtocolSelectMessageSelectedProvider(
+            id = providerId,
+            locations = listOf(providerLocation)
+          ),
+          items = items.map { ProtocolSelectMessageSelectedItems(id = it.id, quantity = it.quantity) },
+          billing = billingInfo,
+          fulfillment = ProtocolFulfillment(
+            end = ProtocolFulfillmentEnd(
+              contact = ProtocolContact(
+                phone = deliveryInfo.phone,
+                email = deliveryInfo.email
+              ), location = deliveryInfo.location
+            ),
+            type = "home_delivery",
+            customer = HboCustomer(HboCustomer.HboPerson(name = deliveryInfo.name))
+          ),
+          addOns = emptyList(),
+          offers = emptyList(),
+          payment = ProtocolPayment(
+            params = mapOf("amount" to payment.paidAmount.toString()),
+            status = ProtocolPayment.Status.PAID
+          )
+        )
+      )
+    )
+    log.info("Confirm API request body: {}", confirmRequest)
+    return bppServiceClient.confirm(confirmRequest).execute()
+  }
 }

@@ -53,3 +53,17 @@ class InitClientResponseMapper : GenericOnPollTransformer<ProtocolOnInit, Client
       )
     )
 }
+
+class ConfirmClientResponseMapper : GenericOnPollTransformer<ProtocolOnConfirm, ClientConfirmResponse> {
+  override fun transform(
+    input: List<ProtocolOnConfirm>,
+    context: ProtocolContext
+  ): Either<HttpError, ClientConfirmResponse> =
+    Either.Right(
+      ClientConfirmResponse(
+        context = context,
+        message = input.first().message
+      )
+    )
+
+}
