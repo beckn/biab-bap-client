@@ -2,10 +2,11 @@ package org.beckn.one.sandbox.bap.client.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.beckn.one.sandbox.bap.client.dtos.ClientContext
 import org.beckn.one.sandbox.bap.client.dtos.OrderPayment
 import org.beckn.one.sandbox.bap.client.dtos.OrderRequestDto
 import org.beckn.one.sandbox.bap.client.external.domains.Subscriber
@@ -19,7 +20,6 @@ import org.beckn.one.sandbox.bap.common.factories.ResponseFactory
 import org.beckn.one.sandbox.bap.common.factories.SubscriberDtoFactory
 import org.beckn.one.sandbox.bap.message.entities.MessageDao
 import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
-import org.beckn.one.sandbox.bap.schemas.*
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
 import org.litote.kmongo.eq
@@ -44,7 +44,7 @@ class ConfirmOrderControllerSpec @Autowired constructor(
   val contextFactory: ContextFactory,
   val uuidFactory: UuidFactory,
   val messageRepository: GenericRepository<MessageDao>
-)  : DescribeSpec() {
+) : DescribeSpec() {
   init {
     describe("Confirm order with BPP") {
       val registryBppLookupApi = WireMockServer(4010)
@@ -53,12 +53,13 @@ class ConfirmOrderControllerSpec @Autowired constructor(
       providerApi.start()
       val provider2Api = WireMockServer(4016)
       provider2Api.start()
+      val context = ClientContext(transactionId = uuidFactory.create())
       val orderRequest = OrderRequestDto(
         message = OrderDtoFactory.create(
           bpp1_id = providerApi.baseUrl(),
           provider1_id = "padma coffee works",
           payment = OrderPayment(100.0)
-        ), context = contextFactory.create()
+        ), context = context
       )
 
       beforeEach {
@@ -69,7 +70,7 @@ class ConfirmOrderControllerSpec @Autowired constructor(
       }
 
       it("should return error when BPP confirm call fails") {
-        providerApi.stubFor(WireMock.post("/confirm").willReturn(WireMock.serverError()))
+        providerApi.stubFor(post("/confirm").willReturn(serverError()))
 
         val confirmOrderResponseString =
           invokeConfirmOrder(orderRequest).andExpect(MockMvcResultMatchers.status().isInternalServerError)
@@ -91,7 +92,7 @@ class ConfirmOrderControllerSpec @Autowired constructor(
 
         val orderRequestWithMultipleBppItems =
           OrderRequestDto(
-            context = contextFactory.create(),
+            context = context,
             message = OrderDtoFactory.create(
               null,
               bpp1_id = providerApi.baseUrl(),
@@ -121,7 +122,7 @@ class ConfirmOrderControllerSpec @Autowired constructor(
 
       it("should validate that order contains items from only one provider") {
         val orderRequestWithMultipleProviderItems = OrderRequestDto(
-          context = contextFactory.create(),
+          context = context,
           message = OrderDtoFactory.create(
             null,
             bpp1_id = providerApi.baseUrl(),
@@ -155,12 +156,12 @@ class ConfirmOrderControllerSpec @Autowired constructor(
             bpp1_id = providerApi.baseUrl(),
             provider1_id = "padma coffee works",
             payment = OrderPayment(0.0)
-          ), context = contextFactory.create()
+          ), context = context
         )
         providerApi
           .stubFor(
-            WireMock.post("/confirm").willReturn(
-              WireMock.okJson(objectMapper.writeValueAsString(ResponseFactory.getDefault(contextFactory.create())))
+            post("/confirm").willReturn(
+              okJson(objectMapper.writeValueAsString(ResponseFactory.getDefault(contextFactory.create())))
             )
           )
 
@@ -170,8 +171,10 @@ class ConfirmOrderControllerSpec @Autowired constructor(
           .response.contentAsString
 
         val confirmOrderResponse =
-          verifyConfirmResponseMessage(confirmOrderResponseString, orderRequestForTest, ResponseMessage.nack(),
-            ProtocolError("BAP_015", "BAP hasn't received payment yet"))
+          verifyConfirmResponseMessage(
+            confirmOrderResponseString, orderRequestForTest, ResponseMessage.nack(),
+            ProtocolError("BAP_015", "BAP hasn't received payment yet")
+          )
         verifyThatMessageWasNotPersisted(confirmOrderResponse)
         verifyThatBppConfirmApiWasNotInvoked(providerApi)
         verifyThatSubscriberLookupApiWasNotInvoked(registryBppLookupApi)
@@ -184,12 +187,12 @@ class ConfirmOrderControllerSpec @Autowired constructor(
             provider1_id = "padma coffee works",
             payment = OrderPayment(100.0),
             items = emptyList()
-          ), context = contextFactory.create()
+          ), context = context
         )
         providerApi
           .stubFor(
-            WireMock.post("/confirm").willReturn(
-              WireMock.okJson(objectMapper.writeValueAsString(ResponseFactory.getDefault(contextFactory.create())))
+            post("/confirm").willReturn(
+              okJson(objectMapper.writeValueAsString(ResponseFactory.getDefault(contextFactory.create())))
             )
           )
 
@@ -208,8 +211,8 @@ class ConfirmOrderControllerSpec @Autowired constructor(
       it("should invoke provider confirm api and save message when payment is done") {
         providerApi
           .stubFor(
-            WireMock.post("/confirm").willReturn(
-              WireMock.okJson(objectMapper.writeValueAsString(ResponseFactory.getDefault(contextFactory.create())))
+            post("/confirm").willReturn(
+              okJson(objectMapper.writeValueAsString(ResponseFactory.getDefault(contextFactory.create())))
             )
           )
 
@@ -235,9 +238,9 @@ class ConfirmOrderControllerSpec @Autowired constructor(
     bppApi: WireMockServer
   ) {
     registryBppLookupApi.verify(
-      WireMock.postRequestedFor(WireMock.urlEqualTo("/lookup"))
+      postRequestedFor(urlEqualTo("/lookup"))
         .withRequestBody(
-          WireMock.equalToJson(
+          equalToJson(
             objectMapper.writeValueAsString(
               SubscriberLookupRequest(
                 subscriber_id = bppApi.baseUrl(),
@@ -253,10 +256,10 @@ class ConfirmOrderControllerSpec @Autowired constructor(
   }
 
   private fun verifyThatBppConfirmApiWasNotInvoked(bppApi: WireMockServer) =
-    bppApi.verify(0, WireMock.postRequestedFor(WireMock.urlEqualTo("/confirm")))
+    bppApi.verify(0, postRequestedFor(urlEqualTo("/confirm")))
 
   private fun verifyThatSubscriberLookupApiWasNotInvoked(registryBppLookupApi: WireMockServer) =
-    registryBppLookupApi.verify(0, WireMock.postRequestedFor(WireMock.urlEqualTo("/lookup")))
+    registryBppLookupApi.verify(0, postRequestedFor(urlEqualTo("/lookup")))
 
   private fun stubBppLookupApi(
     registryBppLookupApi: WireMockServer,
@@ -264,9 +267,9 @@ class ConfirmOrderControllerSpec @Autowired constructor(
   ) {
     registryBppLookupApi
       .stubFor(
-        WireMock.post("/lookup")
-          .withRequestBody(WireMock.matchingJsonPath("$.subscriber_id", WireMock.equalTo(providerApi.baseUrl())))
-          .willReturn(WireMock.okJson(getSubscriberForBpp(providerApi)))
+        post("/lookup")
+          .withRequestBody(matchingJsonPath("$.subscriber_id", equalTo(providerApi.baseUrl())))
+          .willReturn(okJson(getSubscriberForBpp(providerApi)))
       )
   }
 
@@ -304,8 +307,8 @@ class ConfirmOrderControllerSpec @Autowired constructor(
   ) {
     val protocolConfirmRequest = getProtocolConfirmRequest(confirmOrderResponse, orderRequest)
     providerApi.verify(
-      WireMock.postRequestedFor(WireMock.urlEqualTo("/confirm"))
-        .withRequestBody(WireMock.equalToJson(objectMapper.writeValueAsString(protocolConfirmRequest)))
+      postRequestedFor(urlEqualTo("/confirm"))
+        .withRequestBody(equalToJson(objectMapper.writeValueAsString(protocolConfirmRequest)))
     )
   }
 
