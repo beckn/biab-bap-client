@@ -1,7 +1,8 @@
-package org.beckn.one.sandbox.bap.protocol.controllers
+package org.beckn.one.sandbox.bap.protocol.select.controllers
 
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
-import org.beckn.protocol.schemas.ProtocolOnConfirm
+import org.beckn.one.sandbox.bap.protocol.base.controllers.CallbackController
+import org.beckn.protocol.schemas.ProtocolOnSelect
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -10,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping
-class ProtocolOnConfirmController(
-  store: ResponseStorageService<ProtocolOnConfirm>
-): BaseProtocolController<ProtocolOnConfirm>(store) {
+class OnSelectCallbackController(
+  store: ResponseStorageService<ProtocolOnSelect>
+) : CallbackController<ProtocolOnSelect>(store) {
 
   @PostMapping(
-    "v1/on_confirm",
+    "v1/on_select",
     consumes = [MediaType.APPLICATION_JSON_VALUE],
     produces = [MediaType.APPLICATION_JSON_VALUE],
   )
-  fun onConfirm(@RequestBody confirmResponse: ProtocolOnConfirm) = onCallback(confirmResponse)
+  fun onSelect(@RequestBody selectResponse: ProtocolOnSelect) = onCallback(selectResponse)
 
 }

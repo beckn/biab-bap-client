@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.protocol.controllers
+package org.beckn.one.sandbox.bap.protocol.base.controllers
 
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
 import org.beckn.protocol.schemas.ProtocolAckResponse
@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 
-open class BaseProtocolController<Protocol: ProtocolResponse> @Autowired constructor(
+open class CallbackController<Protocol: ProtocolResponse> @Autowired constructor(
   private val storage: ResponseStorageService<Protocol>
 ) {
-  val log = LoggerFactory.getLogger(BaseProtocolController::class.java)
+  val log = LoggerFactory.getLogger(CallbackController::class.java)
 
   fun onCallback(@RequestBody callBackActionResponse: Protocol) = storage
     .save(callBackActionResponse)

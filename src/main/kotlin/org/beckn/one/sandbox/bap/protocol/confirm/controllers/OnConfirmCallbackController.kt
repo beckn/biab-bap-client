@@ -1,7 +1,8 @@
-package org.beckn.one.sandbox.bap.protocol.controllers
+package org.beckn.one.sandbox.bap.protocol.confirm.controllers
 
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
-import org.beckn.protocol.schemas.ProtocolOnInit
+import org.beckn.one.sandbox.bap.protocol.base.controllers.CallbackController
+import org.beckn.protocol.schemas.ProtocolOnConfirm
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -10,15 +11,15 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping
-class ProtocolOnInitController(
-  store: ResponseStorageService<ProtocolOnInit>
-): BaseProtocolController<ProtocolOnInit>(store) {
+class OnConfirmCallbackController(
+  store: ResponseStorageService<ProtocolOnConfirm>
+): CallbackController<ProtocolOnConfirm>(store) {
 
   @PostMapping(
-    "v1/on_init",
+    "v1/on_confirm",
     consumes = [MediaType.APPLICATION_JSON_VALUE],
     produces = [MediaType.APPLICATION_JSON_VALUE],
   )
-  fun onInit(@RequestBody initResponse: ProtocolOnInit) = onCallback(initResponse)
+  fun onConfirm(@RequestBody confirmResponse: ProtocolOnConfirm) = onCallback(confirmResponse)
 
 }

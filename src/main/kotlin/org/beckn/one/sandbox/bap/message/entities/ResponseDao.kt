@@ -40,10 +40,10 @@ data class OnInitMessageDao @Default constructor(
 
 data class OnConfirmDao @Default constructor(
   override val context: ContextDao,
-  val message: OnConfirmMessage? = null,
+  val message: OnConfirmMessageDao? = null,
   override val error: ErrorDao? = null
 ): BecknResponseDao
 
-data class OnConfirmMessage @Default constructor(
+data class OnConfirmMessageDao @Default constructor(
   val order: OrderDao? = null
 )

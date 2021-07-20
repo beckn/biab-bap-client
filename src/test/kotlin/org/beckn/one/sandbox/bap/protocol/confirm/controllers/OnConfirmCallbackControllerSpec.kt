@@ -1,18 +1,19 @@
-package org.beckn.one.sandbox.bap.protocol.controllers
+package org.beckn.one.sandbox.bap.protocol.confirm.controllers
 
 import arrow.core.Either
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.shouldBe
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
-import org.beckn.one.sandbox.bap.message.entities.OnInitDao
+import org.beckn.one.sandbox.bap.message.entities.OnConfirmDao
 import org.beckn.one.sandbox.bap.message.factories.ProtocolContextFactory
-import org.beckn.one.sandbox.bap.message.factories.ProtocolOnInitMessageInitializedFactory
+import org.beckn.one.sandbox.bap.message.factories.ProtocolOrderFactory
 import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
-import org.beckn.protocol.schemas.ProtocolOnInit
-import org.beckn.protocol.schemas.ProtocolOnInitMessage
+import org.beckn.protocol.schemas.ProtocolOnConfirm
+import org.beckn.protocol.schemas.ProtocolOnConfirmMessage
 import org.mockito.kotlin.mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -29,53 +30,53 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @AutoConfigureMockMvc
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
-internal class ProtocolOnInitControllerSpec @Autowired constructor(
+internal class OnConfirmCallbackControllerSpec @Autowired constructor(
   @Autowired
   private val mockMvc: MockMvc,
   @Autowired
   private val mapper: ObjectMapper,
   @Autowired
-  private val onInitResponseRepo: BecknResponseRepository<OnInitDao>,
+  private val onConfirmResponseRepo: BecknResponseRepository<OnConfirmDao>,
 ) : DescribeSpec() {
-  private val postOnInitUrl = "/v1/on_init"
+  private val postOnConfirmUrl = "/v1/on_confirm"
 
-  val onInitResponse = ProtocolOnInit(
+  val onConfirmResponse = ProtocolOnConfirm(
     context = ProtocolContextFactory.fixed,
-    message = ProtocolOnInitMessage(
-      initialized = ProtocolOnInitMessageInitializedFactory.create(1, 2)
+    message = ProtocolOnConfirmMessage(
+      order = ProtocolOrderFactory.create(1, 2)
     )
   )
 
   init {
 
-    describe("Protocol OnSelect API") {
+    describe("Protocol OnConfirm API") {
 
       context("when posted to with a valid response") {
-        onInitResponseRepo.clear()
-        val postOnInitResponse = mockMvc
+        onConfirmResponseRepo.clear()
+        val postOnConfirmResponse = mockMvc
           .perform(
-            post(postOnInitUrl)
+            post(postOnConfirmUrl)
               .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-              .content(mapper.writeValueAsBytes(onInitResponse))
+              .content(mapper.writeValueAsBytes(onConfirmResponse))
           )
 
         it("should respond with status as 200") {
-          postOnInitResponse.andExpect(status().isOk)
+          postOnConfirmResponse.andExpect(status().isOk)
         }
 
-        it("should save on init response in db") {
-          onInitResponseRepo.findByMessageId(onInitResponse.context.messageId).size shouldBeExactly 1
+        it("should save on confirm response in db") {
+          onConfirmResponseRepo.findByMessageId(onConfirmResponse.context.messageId).size shouldBeExactly 1
         }
       }
 
       context("when error occurs when processing request") {
-        val mockService = mock<ResponseStorageService<ProtocolOnInit>> {
-          onGeneric { save(onInitResponse) }.thenReturn(Either.Left(DatabaseError.OnWrite))
+        val mockService = mock<ResponseStorageService<ProtocolOnConfirm>> {
+          onGeneric { save(onConfirmResponse) }.thenReturn(Either.Left(DatabaseError.OnWrite))
         }
-        val controller = ProtocolOnInitController(mockService)
+        val controller = OnConfirmCallbackController(mockService)
 
         it("should respond with internal server error") {
-          val response = controller.onInit(onInitResponse)
+          val response = controller.onConfirm(onConfirmResponse)
           response.statusCode shouldBe DatabaseError.OnWrite.status()
         }
       }

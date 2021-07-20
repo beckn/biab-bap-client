@@ -3,7 +3,7 @@ package org.beckn.one.sandbox.bap.message.mappers
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.beckn.one.sandbox.bap.message.entities.OnConfirmDao
-import org.beckn.one.sandbox.bap.message.entities.OnConfirmMessage
+import org.beckn.one.sandbox.bap.message.entities.OnConfirmMessageDao
 import org.beckn.one.sandbox.bap.message.factories.ProtocolContextFactory
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOrderFactory
 import org.beckn.protocol.schemas.ProtocolOnConfirm
@@ -29,7 +29,7 @@ class OnConfirmResponseMapperSpec @Autowired constructor(
 
   private val entityResponse = OnConfirmDao(
     context = ProtocolContextFactory.fixedAsEntity(protocolResponse.context),
-    message = OnConfirmMessage(
+    message = OnConfirmMessageDao(
       ProtocolOrderFactory.createAsEntity(protocolResponse.message?.order)
     )
   )

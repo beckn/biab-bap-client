@@ -38,16 +38,16 @@ class ClientServicesConfiguration @Autowired constructor(
 
   @Bean
   fun searchResultReplyService(
-      @Autowired messageService: MessageService,
-      @Autowired responseStorageService: ResponseStorageService<ProtocolOnSearch>,
-      @Autowired transformer: GenericOnPollTransformer<ProtocolOnSearch, ClientSearchResponse>
+    @Autowired messageService: MessageService,
+    @Autowired responseStorageService: ResponseStorageService<ProtocolOnSearch>,
+    @Autowired transformer: GenericOnPollTransformer<ProtocolOnSearch, ClientSearchResponse>
   ) = GenericOnPollService(messageService, responseStorageService, transformer)
 
   @Bean
   fun quoteReplyService(
-      @Autowired messageService: MessageService,
-      @Autowired responseStorageService: ResponseStorageService<ProtocolOnSelect>,
-      @Autowired transformer: GenericOnPollTransformer<ProtocolOnSelect, ClientQuoteResponse>
+    @Autowired messageService: MessageService,
+    @Autowired responseStorageService: ResponseStorageService<ProtocolOnSelect>,
+    @Autowired transformer: GenericOnPollTransformer<ProtocolOnSelect, ClientQuoteResponse>
   ) = GenericOnPollService(messageService, responseStorageService, transformer)
 
   @Bean
