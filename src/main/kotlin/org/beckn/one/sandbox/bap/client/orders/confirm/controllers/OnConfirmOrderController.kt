@@ -1,10 +1,11 @@
-package org.beckn.one.sandbox.bap.client.controllers
+package org.beckn.one.sandbox.bap.client.orders.confirm.controllers
 
-import org.beckn.one.sandbox.bap.client.dtos.ClientConfirmResponse
-import org.beckn.one.sandbox.bap.client.dtos.ClientResponse
-import org.beckn.one.sandbox.bap.client.services.GenericOnPollService
-import org.beckn.protocol.schemas.ProtocolOnConfirm
+import org.beckn.one.sandbox.bap.client.shared.controllers.AbstractOnPollController
+import org.beckn.one.sandbox.bap.client.shared.dtos.ClientConfirmResponse
+import org.beckn.one.sandbox.bap.client.shared.dtos.ClientResponse
+import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
+import org.beckn.protocol.schemas.ProtocolOnConfirm
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 class OnConfirmOrderController @Autowired constructor(
   onPollService: GenericOnPollService<ProtocolOnConfirm, ClientConfirmResponse>,
   contextFactory: ContextFactory
-) : BaseOnPollController<ProtocolOnConfirm, ClientConfirmResponse>(onPollService, contextFactory) {
+) : AbstractOnPollController<ProtocolOnConfirm, ClientConfirmResponse>(onPollService, contextFactory) {
 
   @RequestMapping("/client/v1/on_confirm_order")
   @ResponseBody

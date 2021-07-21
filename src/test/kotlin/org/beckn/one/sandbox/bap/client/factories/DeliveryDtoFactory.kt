@@ -1,7 +1,8 @@
 package org.beckn.one.sandbox.bap.client.factories
 
-import org.beckn.one.sandbox.bap.client.dtos.DeliveryDto
-import org.beckn.protocol.schemas.*
+import org.beckn.one.sandbox.bap.client.shared.dtos.DeliveryDto
+import org.beckn.protocol.schemas.ProtocolAddress
+import org.beckn.protocol.schemas.ProtocolLocation
 
 class DeliveryDtoFactory {
   companion object {

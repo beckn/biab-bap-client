@@ -1,9 +1,9 @@
 package org.beckn.one.sandbox.bap.client.factories
 
-import org.beckn.one.sandbox.bap.client.dtos.CartItemProviderDto
-import org.beckn.one.sandbox.bap.client.dtos.OrderItemDto
-import org.beckn.protocol.schemas.ProtocolScalar
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartItemProviderDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.OrderItemDto
 import org.beckn.protocol.schemas.ProtocolItemQuantityAllocated
+import org.beckn.protocol.schemas.ProtocolScalar
 import java.math.BigDecimal
 import java.util.*
 

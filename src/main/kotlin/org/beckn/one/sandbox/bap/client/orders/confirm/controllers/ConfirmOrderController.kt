@@ -1,7 +1,7 @@
-package org.beckn.one.sandbox.bap.client.controllers
+package org.beckn.one.sandbox.bap.client.orders.confirm.controllers
 
-import org.beckn.one.sandbox.bap.client.dtos.OrderRequestDto
-import org.beckn.one.sandbox.bap.client.services.ConfirmOrderService
+import org.beckn.one.sandbox.bap.client.orders.confirm.services.ConfirmOrderService
+import org.beckn.one.sandbox.bap.client.shared.dtos.OrderRequestDto
 import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolAckResponse
