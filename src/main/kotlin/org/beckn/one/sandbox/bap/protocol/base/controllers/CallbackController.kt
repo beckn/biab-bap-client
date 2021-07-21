@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.protocol.base.controllers
+package org.beckn.one.sandbox.bap.protocol.shared.controllers
 
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
 import org.beckn.protocol.schemas.ProtocolAckResponse

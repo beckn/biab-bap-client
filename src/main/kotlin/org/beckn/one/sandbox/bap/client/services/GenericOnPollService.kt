@@ -1,8 +1,8 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.client.shared.services
 
 import arrow.core.Either
 import arrow.core.flatMap
-import org.beckn.one.sandbox.bap.client.dtos.ClientResponse
+import org.beckn.one.sandbox.bap.client.shared.dtos.ClientResponse
 import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.one.sandbox.bap.message.services.MessageService
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
@@ -26,4 +26,8 @@ open class GenericOnPollService<Protocol: ProtocolResponse, Output: ClientRespon
       .flatMap { transformer.transform(it, context) }
   }
 
+}
+
+interface GenericOnPollMapper<in Protocol : ProtocolResponse, out Output : ClientResponse> {
+  fun transform(input: List<Protocol>, context: ProtocolContext): Either<HttpError, Output>
 }

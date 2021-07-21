@@ -1,7 +1,7 @@
 package org.beckn.one.sandbox.bap.message.services
 
 import arrow.core.Either
-import org.beckn.one.sandbox.bap.client.services.SearchService
+import org.beckn.one.sandbox.bap.client.discovery.services.SearchService
 import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
 import org.beckn.one.sandbox.bap.message.entities.MessageDao

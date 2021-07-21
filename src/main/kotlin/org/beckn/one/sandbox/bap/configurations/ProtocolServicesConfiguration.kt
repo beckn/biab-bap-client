@@ -9,7 +9,7 @@ import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
 import org.beckn.one.sandbox.bap.message.services.MessageService
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageServiceImpl
-import org.beckn.one.sandbox.bap.protocol.base.services.PollForResponseService
+import org.beckn.one.sandbox.bap.protocol.shared.services.PollForResponseService
 import org.beckn.protocol.schemas.ProtocolOnConfirm
 import org.beckn.protocol.schemas.ProtocolOnInit
 import org.beckn.protocol.schemas.ProtocolOnSearch

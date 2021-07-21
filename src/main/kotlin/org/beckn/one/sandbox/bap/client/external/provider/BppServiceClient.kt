@@ -5,7 +5,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface BppServiceClient {
+interface BppClient {
   @POST("search")
   fun search(@Body request: ProtocolSearchRequest): Call<ProtocolAckResponse>
 

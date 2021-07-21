@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.errors.registry
+package org.beckn.one.sandbox.bap.client.shared.errors.registry
 
 import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.protocol.schemas.ProtocolError

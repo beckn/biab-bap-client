@@ -6,7 +6,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-interface GatewayServiceClient {
+interface GatewayClient {
   @POST("search")
   fun search(@Body request: ProtocolSearchRequest): Call<ProtocolAckResponse>
 }

@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.message.services
 
 import com.mongodb.MongoException
 import io.kotest.assertions.arrow.either.shouldBeLeft
@@ -7,7 +7,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
 import org.beckn.one.sandbox.bap.message.entities.MessageDao
 import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
-import org.beckn.one.sandbox.bap.message.services.MessageService
 import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify

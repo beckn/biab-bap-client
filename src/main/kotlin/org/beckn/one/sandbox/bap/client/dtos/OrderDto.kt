@@ -1,8 +1,7 @@
-package org.beckn.one.sandbox.bap.client.dtos
+package org.beckn.one.sandbox.bap.client.shared.dtos
 
 import org.beckn.one.sandbox.bap.Default
 import org.beckn.protocol.schemas.ProtocolBilling
-import org.beckn.protocol.schemas.ProtocolContext
 import org.beckn.protocol.schemas.ProtocolItemQuantityAllocated
 
 data class OrderRequestDto @Default constructor(

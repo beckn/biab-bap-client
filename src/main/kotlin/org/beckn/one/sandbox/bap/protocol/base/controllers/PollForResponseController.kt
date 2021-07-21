@@ -1,6 +1,6 @@
-package org.beckn.one.sandbox.bap.protocol.base.controllers
+package org.beckn.one.sandbox.bap.protocol.shared.controllers
 
-import org.beckn.one.sandbox.bap.protocol.base.services.PollForResponseService
+import org.beckn.one.sandbox.bap.protocol.shared.services.PollForResponseService
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolErrorResponse
 import org.beckn.protocol.schemas.ProtocolResponse

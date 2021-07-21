@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.protocol.base.services
+package org.beckn.one.sandbox.bap.protocol.shared.services
 
 import io.kotest.assertions.arrow.either.shouldBeRight
 import io.kotest.core.spec.style.DescribeSpec
@@ -9,6 +9,7 @@ import org.beckn.one.sandbox.bap.message.factories.ProtocolCatalogFactory
 import org.beckn.one.sandbox.bap.message.factories.ProtocolContextFactory
 import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
 import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
+import org.beckn.one.sandbox.bap.protocol.shared.services.PollForResponseService
 import org.beckn.protocol.schemas.ProtocolOnSearch
 import org.beckn.protocol.schemas.ProtocolOnSearchMessage
 import org.springframework.beans.factory.annotation.Autowired

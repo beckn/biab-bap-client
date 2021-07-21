@@ -1,9 +1,9 @@
-package org.beckn.one.sandbox.bap.client.controllers
+package org.beckn.one.sandbox.bap.client.orders.policy.controllers
 
-import org.beckn.one.sandbox.bap.client.dtos.GetOrderPolicyDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.GetOrderPolicyDto
+import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolDescriptor
 import org.beckn.protocol.schemas.ProtocolOption
-import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

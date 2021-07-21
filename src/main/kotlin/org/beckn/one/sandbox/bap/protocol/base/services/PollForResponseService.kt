@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.protocol.base.services
+package org.beckn.one.sandbox.bap.protocol.shared.services
 
 import arrow.core.Either
 import arrow.core.flatMap

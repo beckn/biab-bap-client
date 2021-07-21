@@ -1,15 +1,15 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.client.shared.services
 
 import arrow.core.Either
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import org.beckn.one.sandbox.bap.client.errors.registry.RegistryLookupError
-import org.beckn.one.sandbox.bap.client.errors.registry.RegistryLookupError.Internal
-import org.beckn.one.sandbox.bap.client.errors.registry.RegistryLookupError.NoSubscriberFound
 import org.beckn.one.sandbox.bap.client.external.domains.Subscriber
 import org.beckn.one.sandbox.bap.client.external.registry.RegistryServiceClient
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberDto
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberLookupRequest
+import org.beckn.one.sandbox.bap.client.shared.errors.registry.RegistryLookupError
+import org.beckn.one.sandbox.bap.client.shared.errors.registry.RegistryLookupError.Internal
+import org.beckn.one.sandbox.bap.client.shared.errors.registry.RegistryLookupError.NoSubscriberFound
 import org.beckn.one.sandbox.bap.configurations.RegistryServiceConfiguration.Companion.BPP_REGISTRY_SERVICE_CLIENT
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

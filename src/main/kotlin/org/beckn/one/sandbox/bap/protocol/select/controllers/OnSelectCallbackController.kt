@@ -1,7 +1,7 @@
 package org.beckn.one.sandbox.bap.protocol.select.controllers
 
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
-import org.beckn.one.sandbox.bap.protocol.base.controllers.CallbackController
+import org.beckn.one.sandbox.bap.protocol.shared.controllers.AbstractCallbackController
 import org.beckn.protocol.schemas.ProtocolOnSelect
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping
 class OnSelectCallbackController(
   store: ResponseStorageService<ProtocolOnSelect>
-) : CallbackController<ProtocolOnSelect>(store) {
+) : AbstractCallbackController<ProtocolOnSelect>(store) {
 
   @PostMapping(
     "v1/on_select",

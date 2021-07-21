@@ -1,7 +1,7 @@
 package org.beckn.one.sandbox.bap.protocol.init.controllers
 
 import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
-import org.beckn.one.sandbox.bap.protocol.base.controllers.CallbackController
+import org.beckn.one.sandbox.bap.protocol.shared.controllers.AbstractCallbackController
 import org.beckn.protocol.schemas.ProtocolOnInit
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping
 class OnInitCallbackController(
   store: ResponseStorageService<ProtocolOnInit>
-): CallbackController<ProtocolOnInit>(store) {
+): AbstractCallbackController<ProtocolOnInit>(store) {
 
   @PostMapping(
     "v1/on_init",
