@@ -1,8 +1,7 @@
 package org.beckn.one.sandbox.bap.client.factories
 
-import org.beckn.one.sandbox.bap.client.dtos.CartDto
-import org.beckn.one.sandbox.bap.client.dtos.CartItemDto
-import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartItemDto
 
 class CartFactory {
   companion object {

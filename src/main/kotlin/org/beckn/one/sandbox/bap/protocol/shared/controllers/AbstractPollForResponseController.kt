@@ -8,7 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 
-open class PollForResponseController<Protocol: ProtocolResponse>(
+open class AbstractPollForResponseController<Protocol: ProtocolResponse>(
   private val responseService: PollForResponseService<Protocol>,
   private val contextFactory: ContextFactory
 ) {

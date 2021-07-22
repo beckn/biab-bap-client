@@ -9,7 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 
-open class BaseOnPollController<Protocol: ProtocolResponse, Output: ClientResponse>(
+open class AbstractOnPollController<Protocol: ProtocolResponse, Output: ClientResponse>(
   private val onPollService: GenericOnPollService<Protocol, Output>,
   private val contextFactory: ContextFactory
 ) {

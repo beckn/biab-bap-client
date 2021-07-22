@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.client.discovery.services
 
 import arrow.core.Either
 import arrow.core.Either.Left
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class GatewayService @Autowired constructor(
-  val gatewayServiceClientFactory: GatewayClientFactory,
+  val gatewayClientFactory: GatewayClientFactory,
 ) {
   val log: Logger = LoggerFactory.getLogger(GatewayService::class.java)
 
@@ -23,7 +23,7 @@ class GatewayService @Autowired constructor(
       : Either<GatewaySearchError, ProtocolAckResponse> {
     return Either.catch {
       log.info("Initiating Search using gateway: {}", gateway)
-      val gatewayServiceClient = gatewayServiceClientFactory.getClient(gateway)
+      val gatewayServiceClient = gatewayClientFactory.getClient(gateway)
       log.info("Initiated Search for context: {}", context)
       val httpResponse = gatewayServiceClient.search(buildProtocolSearchRequest(context, criteria)).execute()
       log.info("Search response. Status: {}, Body: {}", httpResponse.code(), httpResponse.body())

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class InternalController @Autowired constructor(
+class InternalConfirmController @Autowired constructor(
   val confirmStore: ResponseStorageService<ProtocolOnConfirm>,
   val contextFactory: ContextFactory
 ) {

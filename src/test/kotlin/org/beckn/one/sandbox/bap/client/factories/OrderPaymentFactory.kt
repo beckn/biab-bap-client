@@ -1,6 +1,6 @@
 package org.beckn.one.sandbox.bap.client.factories
 
-import org.beckn.one.sandbox.bap.client.dtos.OrderPayment
+import org.beckn.one.sandbox.bap.client.shared.dtos.OrderPayment
 
 class OrderPaymentFactory {
   companion object {

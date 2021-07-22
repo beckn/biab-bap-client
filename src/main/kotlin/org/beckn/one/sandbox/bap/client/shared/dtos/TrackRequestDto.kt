@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.dtos
+package org.beckn.one.sandbox.bap.client.shared.dtos
 
 import org.beckn.protocol.schemas.Default
 import org.beckn.protocol.schemas.ProtocolTrackRequestMessage

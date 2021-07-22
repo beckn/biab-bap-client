@@ -2,7 +2,8 @@ package org.beckn.one.sandbox.bap.client.mappers
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.beckn.one.sandbox.bap.client.dtos.ClientCatalog
+import org.beckn.one.sandbox.bap.client.discovery.mappers.ClientCatalogMapper
+import org.beckn.one.sandbox.bap.client.shared.dtos.ClientCatalog
 import org.beckn.one.sandbox.bap.message.factories.*
 import org.beckn.protocol.schemas.ProtocolProviderCatalog
 import org.springframework.beans.factory.annotation.Autowired

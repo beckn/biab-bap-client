@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 open class GenericOnPollService<Protocol: ProtocolResponse, Output: ClientResponse> constructor(
   private val messageService: MessageService,
   private val responseStorageService: ResponseStorageService<Protocol>,
-  private val transformer: GenericOnPollTransformer<Protocol, Output>
+  private val transformer: GenericOnPollMapper<Protocol, Output>
 ) {
   val log: Logger = LoggerFactory.getLogger(this::class.java)
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class InternalController @Autowired constructor(
+class InternalInitController @Autowired constructor(
   val initStore: ResponseStorageService<ProtocolOnInit>,
   val contextFactory: ContextFactory
 ) {

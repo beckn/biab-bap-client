@@ -1,13 +1,13 @@
-package org.beckn.one.sandbox.bap.client.controllers
+package org.beckn.one.sandbox.bap.client.orders.policy.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.beckn.one.sandbox.bap.client.shared.dtos.GetOrderPolicyDto
+import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolContext
 import org.beckn.protocol.schemas.ProtocolDescriptor
 import org.beckn.protocol.schemas.ProtocolOption
-import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest

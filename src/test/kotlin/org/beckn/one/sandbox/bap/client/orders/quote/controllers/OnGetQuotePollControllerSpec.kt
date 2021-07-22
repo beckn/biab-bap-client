@@ -1,13 +1,12 @@
-package org.beckn.one.sandbox.bap.client.controllers
+package org.beckn.one.sandbox.bap.client.orders.quote.controllers
 
 import arrow.core.Either
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.beckn.one.sandbox.bap.client.orders.quote.controllers.OnGetQuotePollController
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientQuoteResponse
-import org.beckn.one.sandbox.bap.client.services.GenericOnPollService
+import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
 import org.beckn.one.sandbox.bap.message.entities.MessageDao
 import org.beckn.one.sandbox.bap.message.entities.OnSelectDao

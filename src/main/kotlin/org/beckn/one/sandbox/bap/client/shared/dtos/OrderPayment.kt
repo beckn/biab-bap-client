@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.dtos
+package org.beckn.one.sandbox.bap.client.shared.dtos
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.beckn.one.sandbox.bap.Default

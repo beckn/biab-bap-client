@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.client.orders.quote.services
 
 import arrow.core.Either
 import io.kotest.assertions.arrow.either.shouldBeLeft

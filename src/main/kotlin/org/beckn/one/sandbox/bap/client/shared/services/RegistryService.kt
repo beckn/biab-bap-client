@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.Either.Left
 import arrow.core.Either.Right
 import org.beckn.one.sandbox.bap.client.external.domains.Subscriber
-import org.beckn.one.sandbox.bap.client.external.registry.RegistryServiceClient
+import org.beckn.one.sandbox.bap.client.external.registry.RegistryClient
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberDto
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberLookupRequest
 import org.beckn.one.sandbox.bap.client.shared.errors.registry.RegistryLookupError
@@ -22,8 +22,8 @@ import retrofit2.Response
 
 @Service
 class RegistryService(
-  @Autowired private val registryServiceClient: RegistryServiceClient,
-  @Qualifier(BPP_REGISTRY_SERVICE_CLIENT) @Autowired private val bppRegistryServiceClient: RegistryServiceClient,
+  @Autowired private val registryServiceClient: RegistryClient,
+  @Qualifier(BPP_REGISTRY_SERVICE_CLIENT) @Autowired private val bppRegistryServiceClient: RegistryClient,
   @Value("\${context.domain}") private val domain: String,
   @Value("\${context.city}") private val city: String,
   @Value("\${context.country}") private val country: String
@@ -39,7 +39,7 @@ class RegistryService(
   }
 
   private fun lookup(
-    client: RegistryServiceClient,
+    client: RegistryClient,
     request: SubscriberLookupRequest
   ): Either<RegistryLookupError, List<SubscriberDto>> {
     return Either.catch {

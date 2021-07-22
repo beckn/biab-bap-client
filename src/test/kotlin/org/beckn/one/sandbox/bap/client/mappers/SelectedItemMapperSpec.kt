@@ -2,9 +2,10 @@ package org.beckn.one.sandbox.bap.client.mappers
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.beckn.one.sandbox.bap.client.dtos.CartItemDto
-import org.beckn.one.sandbox.bap.client.dtos.CartItemProviderDto
-import org.beckn.one.sandbox.bap.client.dtos.CartSelectedItemQuantity
+import org.beckn.one.sandbox.bap.client.orders.quote.mappers.SelectedItemMapper
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartItemDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartItemProviderDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartSelectedItemQuantity
 import org.beckn.protocol.schemas.ProtocolItemQuantityAllocated
 import org.beckn.protocol.schemas.ProtocolScalar
 import org.beckn.protocol.schemas.ProtocolSelectedItem

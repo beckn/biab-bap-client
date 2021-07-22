@@ -1,8 +1,7 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.client.discovery.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.beckn.one.sandbox.bap.client.discovery.services.GatewayService
 import org.beckn.one.sandbox.bap.client.external.gateway.GatewayClient
 import org.beckn.one.sandbox.bap.client.external.gateway.GatewayClientFactory
 import org.beckn.one.sandbox.bap.client.shared.dtos.SearchCriteria

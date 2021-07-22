@@ -1,10 +1,10 @@
-package org.beckn.one.sandbox.bap.client.controllers
+package org.beckn.one.sandbox.bap.client.discovery.controllers
 
+import org.beckn.one.sandbox.bap.client.discovery.services.SearchService
 import org.beckn.one.sandbox.bap.client.shared.dtos.SearchCriteria
-import org.beckn.one.sandbox.bap.client.services.SearchService
+import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolAckResponse
 import org.beckn.protocol.schemas.ResponseMessage
-import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

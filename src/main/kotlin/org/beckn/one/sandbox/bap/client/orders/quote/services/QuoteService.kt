@@ -1,11 +1,13 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.client.orders.quote.services
 
 import arrow.core.Either
 import arrow.core.flatMap
-import org.beckn.one.sandbox.bap.client.dtos.CartDto
-import org.beckn.one.sandbox.bap.client.dtos.CartItemDto
-import org.beckn.one.sandbox.bap.client.errors.validation.MultipleProviderError
-import org.beckn.one.sandbox.bap.client.mappers.SelectedItemMapper
+import org.beckn.one.sandbox.bap.client.orders.quote.mappers.SelectedItemMapper
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.CartItemDto
+import org.beckn.one.sandbox.bap.client.shared.errors.validation.MultipleProviderError
+import org.beckn.one.sandbox.bap.client.shared.services.BppService
+import org.beckn.one.sandbox.bap.client.shared.services.RegistryService
 import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.one.sandbox.bap.message.entities.MessageDao
 import org.beckn.one.sandbox.bap.message.services.MessageService
@@ -41,7 +43,8 @@ class QuoteService @Autowired constructor(
       log.info("Cart contains items from more than one provider, returning error. Cart: {}", cart)
       return Either.Left(MultipleProviderError.MultipleProviders)
     }
-    return registryService.lookupBppById(cart.items.first().bppId)
+    return registryService
+      .lookupBppById(cart.items.first().bppId)
       .flatMap { Either.Right(it.first()) }
       .flatMap {
         bppService.select(

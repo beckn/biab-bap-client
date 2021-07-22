@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 
-open class CallbackController<Protocol: ProtocolResponse> @Autowired constructor(
+open class AbstractCallbackController<Protocol: ProtocolResponse> @Autowired constructor(
   private val storage: ResponseStorageService<Protocol>
 ) {
-  val log = LoggerFactory.getLogger(CallbackController::class.java)
+  val log = LoggerFactory.getLogger(AbstractCallbackController::class.java)
 
   fun onCallback(@RequestBody callBackActionResponse: Protocol) = storage
     .save(callBackActionResponse)

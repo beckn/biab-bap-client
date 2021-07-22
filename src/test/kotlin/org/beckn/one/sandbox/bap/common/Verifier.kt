@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.controllers
+package org.beckn.one.sandbox.bap.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
@@ -7,9 +7,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.beckn.one.sandbox.bap.client.external.domains.Subscriber
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberLookupRequest
-import org.beckn.one.sandbox.bap.common.City
-import org.beckn.one.sandbox.bap.common.Country
-import org.beckn.one.sandbox.bap.common.Domain
 import org.beckn.one.sandbox.bap.message.entities.MessageDao
 import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.protocol.schemas.ProtocolAckResponse

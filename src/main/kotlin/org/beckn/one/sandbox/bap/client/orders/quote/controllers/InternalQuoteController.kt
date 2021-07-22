@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class InternalController @Autowired constructor(
+class InternalQuoteController @Autowired constructor(
   val selectStore: ResponseStorageService<ProtocolOnSelect>,
   val contextFactory: ContextFactory
 ) {

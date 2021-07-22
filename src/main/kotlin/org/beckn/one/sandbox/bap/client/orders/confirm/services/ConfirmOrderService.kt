@@ -1,12 +1,14 @@
-package org.beckn.one.sandbox.bap.client.services
+package org.beckn.one.sandbox.bap.client.orders.confirm.services
 
 import arrow.core.Either
 import arrow.core.flatMap
-import org.beckn.one.sandbox.bap.client.dtos.OrderDto
-import org.beckn.one.sandbox.bap.client.dtos.OrderItemDto
-import org.beckn.one.sandbox.bap.client.dtos.OrderPayment
-import org.beckn.one.sandbox.bap.client.errors.bpp.BppError
-import org.beckn.one.sandbox.bap.client.errors.validation.MultipleProviderError
+import org.beckn.one.sandbox.bap.client.shared.dtos.OrderDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.OrderItemDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.OrderPayment
+import org.beckn.one.sandbox.bap.client.shared.errors.bpp.BppError
+import org.beckn.one.sandbox.bap.client.shared.errors.validation.MultipleProviderError
+import org.beckn.one.sandbox.bap.client.shared.services.BppService
+import org.beckn.one.sandbox.bap.client.shared.services.RegistryService
 import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.one.sandbox.bap.message.entities.MessageDao
 import org.beckn.one.sandbox.bap.message.services.MessageService
@@ -55,9 +57,8 @@ class ConfirmOrderService @Autowired constructor(
           context,
           bppUri = it.first().subscriber_url,
           order = order
-        ) //todo: when payment is integrated, payment object can be passed down to get specifics of amount paid, etc
-      }
-      .flatMap {
+        )
+      }.flatMap {
         messageService.save(MessageDao(id = context.messageId, type = MessageDao.Type.Confirm))
       }
 
