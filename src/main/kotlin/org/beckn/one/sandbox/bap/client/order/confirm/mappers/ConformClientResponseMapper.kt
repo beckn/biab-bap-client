@@ -1,4 +1,4 @@
-package org.beckn.one.sandbox.bap.client.order.confirm.mapers
+package org.beckn.one.sandbox.bap.client.order.confirm.mappers
 
 import arrow.core.Either
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientConfirmResponse

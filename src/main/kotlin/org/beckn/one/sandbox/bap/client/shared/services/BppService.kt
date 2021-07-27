@@ -264,4 +264,31 @@ class BppService @Autowired constructor(
       log.error("Error when invoking BPP Track API", it)
       BppError.Internal
     }
+
+  fun support(
+    bppUri: String,
+    context: ProtocolContext,
+    refId: String
+  ): Either<BppError, ProtocolAckResponse> = Either.catch {
+    log.info("Invoking support API on BPP: {}", bppUri)
+    val bppServiceClient = bppServiceClientFactory.getClient(bppUri)
+    val httpResponse =
+      bppServiceClient.support(
+        ProtocolSupportRequest(
+          context = context,
+          message = ProtocolSupportRequestMessage(refId = refId)
+        )
+      ).execute()
+    log.info("BPP support API response. Status: {}, Body: {}", httpResponse.code(), httpResponse.body())
+    return when {
+      isInternalServerError(httpResponse) -> Left(BppError.Internal)
+      isBodyNull(httpResponse) -> Left(BppError.NullResponse)
+      isAckNegative(httpResponse) -> Left(BppError.Nack)
+      else -> Right(httpResponse.body()!!)
+    }
+  }.mapLeft {
+    log.error("Error when invoking BPP Track API", it)
+    BppError.Internal
+  }
+
 }

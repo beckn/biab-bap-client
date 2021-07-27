@@ -2,10 +2,11 @@ package org.beckn.one.sandbox.bap.configurations
 
 import org.beckn.one.sandbox.bap.client.discovery.mappers.ClientCatalogMapper
 import org.beckn.one.sandbox.bap.client.discovery.mappers.SearchClientResponseMapper
-import org.beckn.one.sandbox.bap.client.order.confirm.mapers.ConfirmClientResponseMapper
+import org.beckn.one.sandbox.bap.client.order.confirm.mappers.ConfirmClientResponseMapper
 import org.beckn.one.sandbox.bap.client.order.init.mapper.InitClientResponseMapper
 import org.beckn.one.sandbox.bap.client.order.quote.mapper.QuoteClientResponseMapper
 import org.beckn.one.sandbox.bap.client.fulfillment.track.mappers.TrackClientResponseMapper
+import org.beckn.one.sandbox.bap.client.order.support.mappers.SupportClientResponseMapper
 import org.beckn.one.sandbox.bap.client.shared.dtos.*
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollMapper
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
@@ -41,6 +42,10 @@ class ClientServicesConfiguration @Autowired constructor(
     TrackClientResponseMapper()
 
   @Bean
+  fun forSupportResults(): GenericOnPollMapper<ProtocolOnSupport, ClientSupportResponse> =
+    SupportClientResponseMapper()
+
+  @Bean
   fun searchResultReplyService(
     @Autowired messageService: MessageService,
     @Autowired responseStorageService: ResponseStorageService<ProtocolOnSearch>,
@@ -73,6 +78,13 @@ class ClientServicesConfiguration @Autowired constructor(
     @Autowired messageService: MessageService,
     @Autowired responseStorageService: ResponseStorageService<ProtocolOnTrack>,
     @Autowired transformer: GenericOnPollMapper<ProtocolOnTrack, ClientTrackResponse>
+  ) = GenericOnPollService(messageService, responseStorageService, transformer)
+
+  @Bean
+  fun supportResultReplyService(
+    @Autowired messageService: MessageService,
+    @Autowired responseStorageService: ResponseStorageService<ProtocolOnSupport>,
+    @Autowired transformer: GenericOnPollMapper<ProtocolOnSupport, ClientSupportResponse>
   ) = GenericOnPollService(messageService, responseStorageService, transformer)
 
 }

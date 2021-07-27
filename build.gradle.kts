@@ -51,7 +51,7 @@ dependencies {
   implementation("com.squareup.retrofit2:retrofit-mock:$retrofitVersion")
   implementation("org.litote.kmongo:kmongo:4.2.8")
   implementation("org.mapstruct:mapstruct:1.4.2.Final")
-  implementation("org.beckn.jvm:beckn-protocol-dtos:0.9.1.9")
+  implementation("org.beckn.jvm:beckn-protocol-dtos:0.9.1.11")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.kotest:kotest-runner-junit5:4.4.3")

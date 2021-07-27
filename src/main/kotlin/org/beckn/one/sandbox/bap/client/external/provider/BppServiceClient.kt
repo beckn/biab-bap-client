@@ -20,4 +20,8 @@ interface BppClient {
 
   @POST("track")
   fun track(@Body request: ProtocolTrackRequest): Call<ProtocolAckResponse>
+
+  @POST("support")
+  fun support(@Body request: ProtocolSupportRequest): Call<ProtocolAckResponse>
+
 }
