@@ -48,7 +48,7 @@ class GatewayService @Autowired constructor(
         ProtocolIntent(
           item = ProtocolIntentItem(descriptor = ProtocolIntentItemDescriptor(name = criteria.searchString)),
           provider = ProtocolProvider(id = criteria.providerId),
-          fulfillment = ProtocolFulfillment(end = ProtocolFulfillmentEnd(location = ProtocolLocation(gps = criteria.location))),
+          fulfillment = ProtocolFulfillment(end = ProtocolFulfillmentEnd(location = ProtocolLocation(gps = criteria.deliveryLocation))),
         )
       )
     )

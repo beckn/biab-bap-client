@@ -8,7 +8,6 @@ import org.beckn.one.sandbox.bap.client.shared.errors.TrackError
 import org.beckn.one.sandbox.bap.client.shared.services.BppService
 import org.beckn.one.sandbox.bap.client.shared.services.RegistryService
 import org.beckn.one.sandbox.bap.common.factories.ContextFactoryInstance
-import org.beckn.one.sandbox.bap.message.services.MessageService
 import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
 import org.beckn.protocol.schemas.ProtocolTrackRequestMessage
 import org.mockito.Mockito.mock
@@ -17,11 +16,9 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 class TrackServiceSpec : DescribeSpec() {
   private val context = ContextFactoryInstance.create().create()
   private val registryService = mock(RegistryService::class.java)
-  private val messageService = mock(MessageService::class.java)
   private val bppService = mock(BppService::class.java)
   private val trackService = TrackService(
     registryService = registryService,
-    messageService = messageService,
     bppService = bppService,
   )
 
@@ -39,7 +36,6 @@ class TrackServiceSpec : DescribeSpec() {
         trackResponse shouldBeLeft TrackError.BppIdNotPresent
         verifyNoMoreInteractions(registryService)
         verifyNoMoreInteractions(bppService)
-        verifyNoMoreInteractions(messageService)
       }
     }
   }

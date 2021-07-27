@@ -10,8 +10,7 @@ import org.beckn.one.sandbox.bap.client.shared.errors.bpp.BppError
 import org.beckn.one.sandbox.bap.client.shared.services.BppService
 import org.beckn.one.sandbox.bap.client.shared.services.RegistryService
 import org.beckn.one.sandbox.bap.errors.HttpError
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.services.MessageService
+import org.beckn.protocol.schemas.ProtocolAckResponse
 import org.beckn.protocol.schemas.ProtocolContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class ConfirmOrderService @Autowired constructor(
-  private val messageService: MessageService,
   private val bppService: BppService,
   private val registryService: RegistryService,
   private val log: Logger = LoggerFactory.getLogger(ConfirmOrderService::class.java)
@@ -28,7 +26,7 @@ class ConfirmOrderService @Autowired constructor(
   fun confirmOrder(
     context: ProtocolContext,
     order: OrderDto
-  ): Either<HttpError, MessageDao?> {
+  ): Either<HttpError, ProtocolAckResponse?> {
     log.info("Got confirm order request.  Context: {}, Order: {}", context, order)
 
     if (order.items.isNullOrEmpty()) {
@@ -58,9 +56,6 @@ class ConfirmOrderService @Autowired constructor(
           bppUri = it.first().subscriber_url,
           order = order
         ) //todo: when payment is integrated, payment object can be passed down to get specifics of amount paid, etc
-      }
-      .flatMap {
-        messageService.save(MessageDao(id = context.messageId, type = MessageDao.Type.Confirm))
       }
 
   }

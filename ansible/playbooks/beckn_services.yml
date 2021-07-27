@@ -1,13 +1,14 @@
 ---
-- hosts: bap_service
+- hosts: bap_client_service
   roles:
     - { role: docker, tags: docker }
     - { role: awscli, tags: awscli }
-    - { role: beckn_service, tags: beckn_one_sandbox_bap }
+    - { role: beckn_service, tags: beckn_one_sandbox_bap_client }
   become: yes
   vars:
-    service_name: beckn_one_sandbox_bap
-    service_description: BAP Service
-    expose_ports: -p 9001:9001
-    mount_points: -v {{ user_dir }}/application.yml:/usr/local/lib/application.yml
+    service_name: beckn_one_sandbox_bap_client
+    service_description: BAP Client Service
+    service_port: 9001
+    expose_ports: -p {{ service_port }}:{{ service_port }}
+    mount_points: -v {{ service_dir }}/application.yml:/usr/local/lib/application.yml
   tags: deploy_beckn_one_sandbox_bap

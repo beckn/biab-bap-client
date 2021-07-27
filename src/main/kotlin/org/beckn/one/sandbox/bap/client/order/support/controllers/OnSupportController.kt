@@ -1,5 +1,6 @@
 package org.beckn.one.sandbox.bap.client.order.support.controllers
 
+import org.beckn.one.sandbox.bap.client.external.bap.ProtocolClient
 import org.beckn.one.sandbox.bap.client.shared.controllers.AbstractOnPollController
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientResponse
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientSupportResponse
@@ -16,12 +17,13 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class OnSupportController @Autowired constructor(
   onPollService: GenericOnPollService<ProtocolOnSupport, ClientSupportResponse>,
-  contextFactory: ContextFactory
+  contextFactory: ContextFactory,
+  val protocolClient: ProtocolClient
 ) : AbstractOnPollController<ProtocolOnSupport, ClientSupportResponse>(onPollService, contextFactory) {
 
   @RequestMapping("/client/v1/on_support")
   @ResponseBody
   fun onSupportOrderV1(
     @RequestParam messageId: String
-  ): ResponseEntity<out ClientResponse> = onPoll(messageId)
+  ): ResponseEntity<out ClientResponse> = onPoll(messageId, protocolClient.getSupportResponseCall(messageId))
 }

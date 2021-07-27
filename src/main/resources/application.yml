@@ -15,12 +15,14 @@ registry_service:
   url: https://demo4460370.mockable.io/registry/
 bpp_registry_service:
   url: https://demo4460370.mockable.io/bpp_registry/
+protocol_service:
+  url: http://localhost:9002/
 context:
   domain: nic2004:52110
   city: std:080
   country: IND
   bap_id: box.beckn.org
-  bap_uri: http://qa.api.box.beckn.org/bap/v1
+  bap_uri: http://localhost:9002/protocol/v1
 database:
   mongo:
     url: mongodb://localhost:27017

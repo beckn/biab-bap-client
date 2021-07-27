@@ -2,19 +2,16 @@ package org.beckn.one.sandbox.bap.client.order.init.controllers
 
 import arrow.core.Either
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.tomakehurst.wiremock.client.WireMock
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.beckn.one.sandbox.bap.client.external.bap.ProtocolClient
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientInitResponse
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
+import org.beckn.one.sandbox.bap.common.factories.MockProtocolBap
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.entities.OnInitDao
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOnInitMessageInitializedFactory
-import org.beckn.one.sandbox.bap.message.mappers.ContextMapper
-import org.beckn.one.sandbox.bap.message.mappers.OnInitResponseMapper
-import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
-import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolOnInit
 import org.beckn.protocol.schemas.ProtocolOnInitMessage
@@ -36,34 +33,30 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 internal class OnInitOrderControllerSpec @Autowired constructor(
-  private val initResponseRepo: BecknResponseRepository<OnInitDao>,
-  private val messageRepository: GenericRepository<MessageDao>,
-  private val onInitResponseMapper: OnInitResponseMapper,
-  private val contextMapper: ContextMapper,
   private val contextFactory: ContextFactory,
   private val mapper: ObjectMapper,
+  private val protocolClient: ProtocolClient,
   private val mockMvc: MockMvc
 ) : DescribeSpec() {
   val context = contextFactory.create()
-  private val contextDao = contextMapper.fromSchema(context)
-  private val anotherMessageId = "d20f481f-38c6-4a29-9acd-cbd1adab9ca0"
   private val protocolOnInit = ProtocolOnInit(
     context,
     message = ProtocolOnInitMessage(ProtocolOnInitMessageInitializedFactory.create(id = 1, numberOfItems = 1))
   )
-
+  val mockProtocolBap = MockProtocolBap.withResetInstance()
   init {
     describe("OnInitialize callback") {
-      initResponseRepo.clear()
-      messageRepository.insertOne(MessageDao(id = contextDao.messageId, type = MessageDao.Type.Init))
-      initResponseRepo.insertMany(entityOnInitResults())
 
       context("when called for given message id") {
+        mockProtocolBap.stubFor(
+          WireMock.get("/protocol/v1/on_init?messageId=${context.messageId}")
+            .willReturn(WireMock.okJson(mapper.writeValueAsString(entityOnInitResults())))
+        )
         val onInitCallBack = mockMvc
           .perform(
             MockMvcRequestBuilders.get("/client/v1/on_initialize_order")
               .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-              .param("messageId", contextDao.messageId)
+              .param("messageId", context.messageId)
           )
 
         it("should respond with status ok") {
@@ -80,23 +73,21 @@ internal class OnInitOrderControllerSpec @Autowired constructor(
 
       context("when failure occurs during request processing") {
         val mockOnPollService = mock<GenericOnPollService<ProtocolOnInit, ClientInitResponse>> {
-          onGeneric { onPoll(any()) }.thenReturn(Either.Left(DatabaseError.OnRead))
+          onGeneric { onPoll(any(), any()) }.thenReturn(Either.Left(DatabaseError.OnRead))
         }
-        val onInitPollController = OnInitOrderController(mockOnPollService, contextFactory)
+        val onInitPollController = OnInitOrderController(mockOnPollService, contextFactory, protocolClient)
         it("should respond with failure") {
-          val response = onInitPollController.onInitOrderV1(contextDao.messageId)
+          val response = onInitPollController.onInitOrderV1(context.messageId)
           response.statusCode shouldBe DatabaseError.OnRead.status()
         }
       }
     }
   }
 
-  fun entityOnInitResults(): List<OnInitDao> {
-    val onInitDao = onInitResponseMapper.protocolToEntity(protocolOnInit)
+  fun entityOnInitResults(): List<ProtocolOnInit> {
     return listOf(
-      onInitDao,
-      onInitDao,
-      onInitDao.copy(context = contextDao.copy(messageId = anotherMessageId))
+      protocolOnInit,
+      protocolOnInit,
     )
   }
 }

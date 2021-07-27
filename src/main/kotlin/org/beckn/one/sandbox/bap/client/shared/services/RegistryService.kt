@@ -10,7 +10,7 @@ import org.beckn.one.sandbox.bap.client.external.registry.SubscriberLookupReques
 import org.beckn.one.sandbox.bap.client.shared.errors.registry.RegistryLookupError
 import org.beckn.one.sandbox.bap.client.shared.errors.registry.RegistryLookupError.Internal
 import org.beckn.one.sandbox.bap.client.shared.errors.registry.RegistryLookupError.NoSubscriberFound
-import org.beckn.one.sandbox.bap.configurations.RegistryServiceConfiguration.Companion.BPP_REGISTRY_SERVICE_CLIENT
+import org.beckn.one.sandbox.bap.configurations.RegistryClientConfiguration.Companion.BPP_REGISTRY_SERVICE_CLIENT
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

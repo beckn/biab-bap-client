@@ -177,8 +177,8 @@ class BppService @Autowired constructor(
 
   private fun getFulfillmentFilter(criteria: SearchCriteria) =
     when {
-      hasText(criteria.location) ->
-        ProtocolFulfillment(end = ProtocolFulfillmentEnd(location = ProtocolLocation(gps = criteria.location)))
+      hasText(criteria.deliveryLocation) ->
+        ProtocolFulfillment(end = ProtocolFulfillmentEnd(location = ProtocolLocation(gps = criteria.deliveryLocation)))
       else -> null
     }
 

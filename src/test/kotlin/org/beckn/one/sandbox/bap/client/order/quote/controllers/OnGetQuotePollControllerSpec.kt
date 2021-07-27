@@ -2,20 +2,16 @@ package org.beckn.one.sandbox.bap.client.order.quote.controllers
 
 import arrow.core.Either
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.tomakehurst.wiremock.client.WireMock
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import org.beckn.one.sandbox.bap.client.order.quote.controllers.OnGetQuotePollController
+import org.beckn.one.sandbox.bap.client.external.bap.ProtocolClient
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientQuoteResponse
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
+import org.beckn.one.sandbox.bap.common.factories.MockProtocolBap
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.entities.OnSelectDao
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOnSelectMessageSelectedFactory
-import org.beckn.one.sandbox.bap.message.mappers.ContextMapper
-import org.beckn.one.sandbox.bap.message.mappers.OnSelectResponseMapper
-import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
-import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolOnSelect
 import org.beckn.protocol.schemas.ProtocolOnSelectMessage
@@ -40,12 +36,9 @@ import java.time.ZoneId
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 internal class OnGetQuotePollControllerSpec @Autowired constructor(
-  private val selectResponseRepo: BecknResponseRepository<OnSelectDao>,
-  private val messageRepository: GenericRepository<MessageDao>,
-  private val onSelectResponseMapper: OnSelectResponseMapper,
-  private val contextMapper: ContextMapper,
   private val contextFactory: ContextFactory,
   private val mapper: ObjectMapper,
+  private val protocolClient: ProtocolClient,
   private val mockMvc: MockMvc
 ) : DescribeSpec() {
 
@@ -55,25 +48,25 @@ internal class OnGetQuotePollControllerSpec @Autowired constructor(
   )
 
   val context = contextFactory.create()
-  private val contextDao = contextMapper.fromSchema(context)
-  private val anotherMessageId = "d20f481f-38c6-4a29-9acd-cbd1adab9ca0"
   private val protocolOnSelect = ProtocolOnSelect(
     context,
     message = ProtocolOnSelectMessage(selected = ProtocolOnSelectMessageSelectedFactory.create())
   )
+  val mockProtocolBap = MockProtocolBap.withResetInstance()
 
   init {
     describe("OnGetQuote callback") {
-      selectResponseRepo.clear()
-      messageRepository.insertOne(MessageDao(id = contextDao.messageId, type = MessageDao.Type.Select))
-      selectResponseRepo.insertMany(entitySelectResults())
 
       context("when called for given message id") {
+        mockProtocolBap.stubFor(
+          WireMock.get("/protocol/v1/on_select?messageId=${context.messageId}")
+            .willReturn(WireMock.okJson(mapper.writeValueAsString(entitySelectResults())))
+        )
         val onGetQuoteCall = mockMvc
           .perform(
             MockMvcRequestBuilders.get("/client/v1/on_get_quote")
               .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-              .param("messageId", contextDao.messageId)
+              .param("messageId", context.messageId)
           )
 
         it("should respond with status ok") {
@@ -91,23 +84,21 @@ internal class OnGetQuotePollControllerSpec @Autowired constructor(
 
       context("when failure occurs during request processing") {
         val mockOnPollService = mock<GenericOnPollService<ProtocolOnSelect, ClientQuoteResponse>> {
-          onGeneric { onPoll(any()) }.thenReturn(Either.Left(DatabaseError.OnRead))
+          onGeneric { onPoll(any(), any()) }.thenReturn(Either.Left(DatabaseError.OnRead))
         }
-        val onSelectPollController = OnGetQuotePollController(mockOnPollService, contextFactory)
+        val onSelectPollController = OnGetQuotePollController(mockOnPollService, contextFactory, protocolClient)
         it("should respond with failure") {
-          val response = onSelectPollController.onSelect(contextDao.messageId)
+          val response = onSelectPollController.onSelect(context.messageId)
           response.statusCode shouldBe DatabaseError.OnRead.status()
         }
       }
     }
   }
 
-  fun entitySelectResults(): List<OnSelectDao> {
-    val onSelectDao = onSelectResponseMapper.protocolToEntity(protocolOnSelect)
+  fun entitySelectResults(): List<ProtocolOnSelect> {
     return listOf(
-      onSelectDao,
-      onSelectDao,
-      onSelectDao.copy(context = contextDao.copy(messageId = anotherMessageId))
+      protocolOnSelect,
+      protocolOnSelect
     )
   }
 }

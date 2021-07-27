@@ -54,7 +54,7 @@ internal class GatewayServiceSpec : DescribeSpec() {
 
         val response = gatewayService.search(
           gateway, context,
-          SearchCriteria(searchString = queryString, location = locationString)
+          SearchCriteria(searchString = queryString, deliveryLocation = locationString)
         )
 
         response
@@ -71,7 +71,7 @@ internal class GatewayServiceSpec : DescribeSpec() {
 
         val response = gatewayService.search(
           gateway, context,
-          SearchCriteria(searchString = queryString, location = locationString)
+          SearchCriteria(searchString = queryString, deliveryLocation = locationString)
         )
 
         response
@@ -89,7 +89,7 @@ internal class GatewayServiceSpec : DescribeSpec() {
 
         val response = gatewayService.search(
           gateway, context,
-          SearchCriteria(searchString = queryString, location = locationString)
+          SearchCriteria(searchString = queryString, deliveryLocation = locationString)
         )
 
         response

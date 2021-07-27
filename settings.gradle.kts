@@ -1,1 +1,1 @@
-rootProject.name = "sandbox_bap"
+rootProject.name = "sandbox_bap_client"

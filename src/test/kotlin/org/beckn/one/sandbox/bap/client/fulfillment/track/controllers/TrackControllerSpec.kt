@@ -17,12 +17,9 @@ import org.beckn.one.sandbox.bap.common.factories.MockNetwork.registryBppLookupA
 import org.beckn.one.sandbox.bap.common.factories.MockNetwork.retailBengaluruBpp
 import org.beckn.one.sandbox.bap.common.factories.ResponseFactory
 import org.beckn.one.sandbox.bap.common.factories.SubscriberDtoFactory
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
 import org.beckn.protocol.schemas.*
-import org.litote.kmongo.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -43,9 +40,8 @@ class TrackControllerSpec @Autowired constructor(
   val objectMapper: ObjectMapper,
   val contextFactory: ContextFactory,
   val uuidFactory: UuidFactory,
-  val messageRepository: GenericRepository<MessageDao>,
 ) : DescribeSpec() {
-  private val verifier = Verifier(objectMapper, messageRepository)
+  private val verifier = Verifier(objectMapper)
 
   init {
     describe("Track") {
@@ -66,7 +62,6 @@ class TrackControllerSpec @Autowired constructor(
 
         val trackResponse =
           verifyResponseMessage(trackResponseString, ResponseMessage.nack(), BppError.Internal.error())
-        verifier.verifyThatMessageWasNotPersisted(trackResponse)
         verifyThatBppTrackApiWasInvoked(trackResponse, retailBengaluruBpp)
         verifier.verifyThatSubscriberLookupApiWasInvoked(
           registryBppLookupApi,
@@ -92,7 +87,6 @@ class TrackControllerSpec @Autowired constructor(
           expectedMessage = ResponseMessage.ack(),
           expectedError = null
         )
-        verifier.verifyThatMessageForRequestIsPersisted(trackResponse, MessageDao.Type.Track)
         verifyThatBppTrackApiWasInvoked(trackResponse, retailBengaluruBpp)
         verifier.verifyThatSubscriberLookupApiWasInvoked(registryBppLookupApi, retailBengaluruBpp)
       }
@@ -168,12 +162,5 @@ class TrackControllerSpec @Autowired constructor(
       context = trackResponse.context!!,
       message = ProtocolTrackRequestMessage(orderId = "order id 1"),
     )
-  }
-
-  private fun verifyThatMessageForSelectRequestIsPersisted(trackResponse: ProtocolAckResponse) {
-    val savedMessage = messageRepository.findOne(MessageDao::id eq trackResponse.context?.messageId)
-    savedMessage shouldNotBe null
-    savedMessage?.id shouldBe trackResponse.context?.messageId
-    savedMessage?.type shouldBe MessageDao.Type.Select
   }
 }

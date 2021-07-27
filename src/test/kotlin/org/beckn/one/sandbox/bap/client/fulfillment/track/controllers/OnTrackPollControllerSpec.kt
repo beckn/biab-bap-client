@@ -2,19 +2,16 @@ package org.beckn.one.sandbox.bap.client.fulfillment.track.controllers
 
 import arrow.core.Either
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.tomakehurst.wiremock.client.WireMock
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.beckn.one.sandbox.bap.client.external.bap.ProtocolClient
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientTrackResponse
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
+import org.beckn.one.sandbox.bap.common.factories.MockProtocolBap
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.entities.OnTrackDao
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOnTrackMessageTrackingFactory
-import org.beckn.one.sandbox.bap.message.mappers.ContextMapper
-import org.beckn.one.sandbox.bap.message.mappers.OnTrackResponseMapper
-import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
-import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolOnTrack
 import org.beckn.protocol.schemas.ProtocolOnTrackMessage
@@ -36,35 +33,32 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 internal class OnTrackPollControllerSpec @Autowired constructor(
-  private val trackResponseRepo: BecknResponseRepository<OnTrackDao>,
-  private val messageRepository: GenericRepository<MessageDao>,
-  private val onTrackResponseMapper: OnTrackResponseMapper,
   private val contextFactory: ContextFactory,
   private val mapper: ObjectMapper,
-  private val mockMvc: MockMvc,
-  contextMapper: ContextMapper,
+  private val protocolClient: ProtocolClient,
+  private val mockMvc: MockMvc
 ) : DescribeSpec() {
 
   val context = contextFactory.create()
-  private val contextDao = contextMapper.fromSchema(context)
-  private val anotherMessageId = "d20f481f-38c6-4a29-9acd-cbd1adab9ca0"
   private val protocolOnTrack = ProtocolOnTrack(
     context,
     message = ProtocolOnTrackMessage(tracking = ProtocolOnTrackMessageTrackingFactory.create())
   )
+  val mockProtocolBap = MockProtocolBap.withResetInstance()
 
   init {
     describe("OnTrack callback") {
-      trackResponseRepo.clear()
-      messageRepository.insertOne(MessageDao(id = contextDao.messageId, type = MessageDao.Type.Track))
-      trackResponseRepo.insertMany(entityTrackResults())
 
       context("when called for given message id") {
+        mockProtocolBap.stubFor(
+          WireMock.get("/protocol/v1/on_track?messageId=${context.messageId}")
+            .willReturn(WireMock.okJson(mapper.writeValueAsString(trackResults())))
+        )
         val onTrackCall = mockMvc
           .perform(
             MockMvcRequestBuilders.get("/client/v1/on_track")
               .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-              .param("messageId", contextDao.messageId)
+              .param("messageId", context.messageId)
           )
 
         it("should respond with status ok") {
@@ -82,23 +76,21 @@ internal class OnTrackPollControllerSpec @Autowired constructor(
 
       context("when failure occurs during request processing") {
         val mockOnPollService = mock<GenericOnPollService<ProtocolOnTrack, ClientTrackResponse>> {
-          onGeneric { onPoll(any()) }.thenReturn(Either.Left(DatabaseError.OnRead))
+          onGeneric { onPoll(any(), any()) }.thenReturn(Either.Left(DatabaseError.OnRead))
         }
-        val onTrackPollController = OnTrackPollController(mockOnPollService, contextFactory)
+        val onTrackPollController = OnTrackPollController(mockOnPollService, contextFactory, protocolClient)
         it("should respond with failure") {
-          val response = onTrackPollController.onTrack(contextDao.messageId)
+          val response = onTrackPollController.onTrack(context.messageId)
           response.statusCode shouldBe DatabaseError.OnRead.status()
         }
       }
     }
   }
 
-  fun entityTrackResults(): List<OnTrackDao> {
-    val onTrackDao = onTrackResponseMapper.protocolToEntity(protocolOnTrack)
+  fun trackResults(): List<ProtocolOnTrack> {
     return listOf(
-      onTrackDao,
-      onTrackDao,
-      onTrackDao.copy(context = contextDao.copy(messageId = anotherMessageId))
+      protocolOnTrack,
+      protocolOnTrack
     )
   }
 }

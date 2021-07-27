@@ -8,6 +8,7 @@ import org.beckn.protocol.schemas.ProtocolResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
+import retrofit2.Call
 
 open class AbstractOnPollController<Protocol: ProtocolResponse, Output: ClientResponse>(
   private val onPollService: GenericOnPollService<Protocol, Output>,
@@ -16,9 +17,10 @@ open class AbstractOnPollController<Protocol: ProtocolResponse, Output: ClientRe
   private val log: Logger = LoggerFactory.getLogger(this::class.java)
 
   fun onPoll(
-    messageId: String
+    messageId: String,
+    call: Call<List<Protocol>>
   ): ResponseEntity<out ClientResponse> = onPollService
-    .onPoll(contextFactory.create(messageId = messageId))
+    .onPoll(contextFactory.create(messageId = messageId), call)
     .fold(
       {
         log.error("Error when finding search response by message id. Error: {}", it)

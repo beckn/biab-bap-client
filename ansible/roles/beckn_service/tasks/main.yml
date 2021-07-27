@@ -18,17 +18,20 @@
   template:
     src: "beckn_service.j2"
     dest: "/etc/systemd/system/{{ service_name }}.service"
-    backup: yes
   notify:
     - Systemctl Daemon Reload
     - Systemctl Enable Service
     - Restart Service
 
+- name: Create Service directory
+  file:
+    path: "{{ service_dir }}"
+    state: directory
+
 - name: Substitute application properties
   template:
     src: "../../../../src/main/resources/application.yml.j2"
-    dest: "{{ user_dir }}/application.yml"
-    backup: yes
+    dest: "{{ service_dir }}/application.yml"
 
 - name: Cleanup older docker images
   ansible.builtin.shell: 'docker image prune --all --force --filter until=$(date "--date=`date` -2 DAY" +%Y-%m-%dT%H:%m)'

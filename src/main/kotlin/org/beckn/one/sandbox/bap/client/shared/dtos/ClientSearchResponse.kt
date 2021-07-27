@@ -1,6 +1,5 @@
 package org.beckn.one.sandbox.bap.client.shared.dtos
 
-import org.beckn.one.sandbox.bap.Default
 import org.beckn.protocol.schemas.*
 import java.time.LocalDateTime
 
@@ -20,8 +19,4 @@ data class ClientCatalog @Default constructor(
   val bppCategories: List<ProtocolCategory>? = null,
   val exp: LocalDateTime? = null,
   val bppId: String? = null,
-)
-
-data class ListWrapperResponseMessage<R>(
-  val response: List<R>? = null,
 )

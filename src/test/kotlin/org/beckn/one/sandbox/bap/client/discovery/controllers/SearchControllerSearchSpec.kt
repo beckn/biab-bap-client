@@ -5,9 +5,12 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberDto
 import org.beckn.one.sandbox.bap.client.factories.SearchRequestFactory
+import org.beckn.one.sandbox.bap.client.shared.dtos.ClientContext
+import org.beckn.one.sandbox.bap.client.shared.dtos.SearchCriteria
+import org.beckn.one.sandbox.bap.client.shared.dtos.SearchRequestDto
+import org.beckn.one.sandbox.bap.client.shared.dtos.SearchRequestMessageDto
 import org.beckn.one.sandbox.bap.common.factories.MockNetwork
 import org.beckn.one.sandbox.bap.common.factories.MockNetwork.registry
 import org.beckn.one.sandbox.bap.common.factories.MockNetwork.registryBppLookupApi
@@ -15,22 +18,21 @@ import org.beckn.one.sandbox.bap.common.factories.MockNetwork.retailBengaluruBg
 import org.beckn.one.sandbox.bap.common.factories.MockNetwork.retailBengaluruBpp
 import org.beckn.one.sandbox.bap.common.factories.ResponseFactory
 import org.beckn.one.sandbox.bap.common.factories.SubscriberDtoFactory
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
+import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
 import org.beckn.protocol.schemas.ProtocolAckResponse
 import org.beckn.protocol.schemas.ResponseStatus.ACK
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
-import org.litote.kmongo.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.MvcResult
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -42,7 +44,7 @@ class SearchControllerSpec @Autowired constructor(
   val mockMvc: MockMvc,
   val objectMapper: ObjectMapper,
   val contextFactory: ContextFactory,
-  val messageRepository: GenericRepository<MessageDao>
+  val uuidFactory: UuidFactory
 ) : DescribeSpec() {
   init {
 
@@ -85,7 +87,7 @@ class SearchControllerSpec @Autowired constructor(
           .andReturn()
 
         verifyThatSearchApiWasInvoked()
-        verifyThatSearchMessageWasPersisted(result)
+        verifyAckResponse(result)
       }
 
       it("should invoke Beckn /search API on first gateway and persist message with location") {
@@ -99,7 +101,7 @@ class SearchControllerSpec @Autowired constructor(
           .andReturn()
 
         verifyThatSearchApiWasInvoked()
-        verifyThatSearchMessageWasPersisted(result)
+        verifyAckResponse(result)
       }
 
       it("should invoke Beckn /search API on specified BPP directly and persist message") {
@@ -114,7 +116,7 @@ class SearchControllerSpec @Autowired constructor(
             .andExpect(jsonPath("$.context.message_id", `is`(notNullValue())))
             .andReturn()
 
-        val searchResponse = verifyThatSearchMessageWasPersisted(result)
+        val searchResponse = verifyAckResponse(result)
         verifyThatBppSearchWasInvoked(searchResponse, "tulsidev", "12.9259,77.583", "Fictional mystery books")
       }
 
@@ -129,7 +131,7 @@ class SearchControllerSpec @Autowired constructor(
             .andExpect(jsonPath("$.context.message_id", `is`(notNullValue())))
             .andReturn()
 
-        val searchResponse = verifyThatSearchMessageWasPersisted(result)
+        val searchResponse = verifyAckResponse(result)
         val protocolSearchRequest = SearchRequestFactory.create(
           context = searchResponse.context!!,
           searchString = "Fictional mystery books",
@@ -194,12 +196,9 @@ class SearchControllerSpec @Autowired constructor(
       )
     )
 
-  private fun verifyThatSearchMessageWasPersisted(result: MvcResult): ProtocolAckResponse {
+  private fun verifyAckResponse(result: MvcResult): ProtocolAckResponse {
     val searchResponse = objectMapper.readValue(result.response.contentAsString, ProtocolAckResponse::class.java)
-    val savedMessage = messageRepository.findOne(MessageDao::id eq searchResponse.context?.messageId)
-    savedMessage shouldNotBe null
-    savedMessage?.id shouldBe searchResponse.context?.messageId
-    savedMessage?.type shouldBe MessageDao.Type.Search
+    searchResponse.message.ack.status shouldBe ACK
     return searchResponse
   }
 
@@ -224,12 +223,22 @@ class SearchControllerSpec @Autowired constructor(
       )
   }
 
-  private fun invokeSearchApi(location: String = "", providerId: String = "", bppId: String = "") = mockMvc
-    .perform(
-      get("/client/v1/search")
-        .param("searchString", "Fictional mystery books")
-        .param("location", location)
-        .param("bppId", bppId)
-        .param("providerId", providerId)
+  private fun invokeSearchApi(location: String = "", providerId: String = "", bppId: String = ""): ResultActions {
+    val searchRequestDto = SearchRequestDto(
+      context = ClientContext(transactionId = uuidFactory.create(), bppId = bppId),
+      message = SearchRequestMessageDto(
+        criteria = SearchCriteria(
+          searchString = "Fictional mystery books",
+          deliveryLocation = location,
+          providerId = providerId,
+        )
+      )
     )
+    return mockMvc
+      .perform(
+        org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/client/v1/search")
+          .content(objectMapper.writeValueAsString(searchRequestDto))
+          .contentType(MediaType.APPLICATION_JSON)
+      )
+  }
 }

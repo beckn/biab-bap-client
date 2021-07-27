@@ -1,7 +1,7 @@
 package org.beckn.one.sandbox.bap.client.shared.dtos
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.beckn.one.sandbox.bap.Default
+import org.beckn.protocol.schemas.Default
 
 data class OrderPayment @Default constructor(
   val paidAmount: Double,

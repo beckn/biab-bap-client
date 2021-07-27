@@ -45,7 +45,7 @@ jobs:
           load: true
           context: .
           push: false
-          tags: 795151977897.dkr.ecr.ap-south-1.amazonaws.com/beckn_one_sandbox_bap:${{ github.run_number }}
+          tags: 795151977897.dkr.ecr.ap-south-1.amazonaws.com/beckn_one_sandbox_bap_client:${{ github.run_number }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Cache growth workaround
@@ -57,8 +57,8 @@ jobs:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 795151977897.dkr.ecr.ap-south-1.amazonaws.com
-          docker push 795151977897.dkr.ecr.ap-south-1.amazonaws.com/beckn_one_sandbox_bap:${GITHUB_RUN_NUMBER}
-          docker rmi -f 795151977897.dkr.ecr.ap-south-1.amazonaws.com/beckn_one_sandbox_bap:${GITHUB_RUN_NUMBER}
+          docker push 795151977897.dkr.ecr.ap-south-1.amazonaws.com/beckn_one_sandbox_bap_client:${GITHUB_RUN_NUMBER}
+          docker rmi -f 795151977897.dkr.ecr.ap-south-1.amazonaws.com/beckn_one_sandbox_bap_client:${GITHUB_RUN_NUMBER}
       - name: Deploying to the BAP servers qa using ansible
         run: |
           cd ansible

@@ -10,17 +10,14 @@ import org.beckn.one.sandbox.bap.client.shared.errors.CartError
 import org.beckn.one.sandbox.bap.client.shared.services.BppService
 import org.beckn.one.sandbox.bap.client.shared.services.RegistryService
 import org.beckn.one.sandbox.bap.common.factories.ContextFactoryInstance
-import org.beckn.one.sandbox.bap.message.services.MessageService
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.verifyNoMoreInteractions
 
 class QuoteServiceSpec : DescribeSpec() {
-  private val messageService = mock(MessageService::class.java)
   private val registryService = mock(RegistryService::class.java)
   private val bppService = mock(BppService::class.java)
   private val context = ContextFactoryInstance.create().create()
   private val quoteService = QuoteService(
-    messageService = messageService,
     registryService = registryService,
     bppService = bppService,
     selectedItemMapper = SelectedItemMapperImpl()
@@ -38,7 +35,6 @@ class QuoteServiceSpec : DescribeSpec() {
         quote shouldBeRight null
         verifyNoMoreInteractions(registryService)
         verifyNoMoreInteractions(bppService)
-        verifyNoMoreInteractions(messageService)
       }
 
       it("should return error when multiple BPP items are part of the cart") {
@@ -52,7 +48,6 @@ class QuoteServiceSpec : DescribeSpec() {
         quote shouldBeLeft CartError.MultipleBpps
         verifyNoMoreInteractions(registryService)
         verifyNoMoreInteractions(bppService)
-        verifyNoMoreInteractions(messageService)
       }
 
       it("should return error when multiple Provider items are part of the cart") {
@@ -71,7 +66,6 @@ class QuoteServiceSpec : DescribeSpec() {
         quote shouldBeLeft CartError.MultipleProviders
         verifyNoMoreInteractions(registryService)
         verifyNoMoreInteractions(bppService)
-        verifyNoMoreInteractions(messageService)
       }
     }
   }

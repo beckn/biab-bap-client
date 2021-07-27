@@ -1,6 +1,5 @@
 package org.beckn.one.sandbox.bap.message.factories
 
-import org.beckn.one.sandbox.bap.message.entities.*
 import org.beckn.protocol.schemas.*
 
 object ProtocolOnInitMessageInitializedFactory {
@@ -22,26 +21,6 @@ object ProtocolOnInitMessageInitializedFactory {
       billing = ProtocolBillingFactory.create(),
       fulfillment = ProtocolFulfillmentFactory.create(id),
       quote = ProtocolQuotationFactory.quoteForItems(itemIds)
-    )
-  }
-
-  fun createAsEntity(protocol: ProtocolOnInitMessageInitialized?) = protocol?.let {
-    OnInitMessageInitializedDao(
-      provider = protocol.provider?.let { p -> OnInitMessageInitializedProviderDao(id = p.id) },
-      providerLocation = protocol.providerLocation?.let { l -> OnInitMessageInitializedProviderLocationDao(id = l.id) },
-      items = protocol.items?.map { i ->
-        OnInitMessageInitializedItemsDao(
-          id = i.id,
-          quantity = i.quantity?.let { q ->
-            ItemQuantityAllocatedDao(count = q.count)
-          }
-        )
-      },
-      addOns = null,
-      offers = null,
-      billing = ProtocolBillingFactory.createAsEntity(it.billing),
-      fulfillment = ProtocolFulfillmentFactory.createAsEntity(it.fulfillment),
-      quote = ProtocolQuotationFactory.createAsEntity(it.quote)
     )
   }
 }

@@ -20,7 +20,8 @@ class ContextFactory @Autowired constructor(
   fun create(
     transactionId: String = uuidFactory.create(),
     messageId: String = uuidFactory.create(),
-    action: ProtocolContext.Action? = ProtocolContext.Action.SEARCH
+    action: ProtocolContext.Action? = ProtocolContext.Action.SEARCH,
+    bppId: String? = null,
   ) = ProtocolContext(
     domain = domain,
     country = country,
@@ -29,6 +30,7 @@ class ContextFactory @Autowired constructor(
     coreVersion = ProtocolVersion.V0_9_1.value,
     bapId = bapId,
     bapUri = bapUrl,
+    bppId = bppId,
     transactionId = transactionId,
     messageId = messageId,
     clock = clock,

@@ -22,12 +22,9 @@ import org.beckn.one.sandbox.bap.common.factories.MockNetwork.registryBppLookupA
 import org.beckn.one.sandbox.bap.common.factories.MockNetwork.retailBengaluruBpp
 import org.beckn.one.sandbox.bap.common.factories.ResponseFactory
 import org.beckn.one.sandbox.bap.common.factories.SubscriberDtoFactory
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
 import org.beckn.protocol.schemas.*
-import org.litote.kmongo.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -47,7 +44,6 @@ class InitOrderControllerSpec @Autowired constructor(
   val objectMapper: ObjectMapper,
   val contextFactory: ContextFactory,
   val uuidFactory: UuidFactory,
-  val messageRepository: GenericRepository<MessageDao>
 ) : DescribeSpec() {
   init {
     describe("Initialize order with BPP") {
@@ -81,7 +77,6 @@ class InitOrderControllerSpec @Autowired constructor(
             ResponseMessage.nack(),
             ProtocolError("BAP_011", "BPP returned error")
           )
-        verifyThatMessageWasNotPersisted(initOrderResponse)
         verifyThatBppInitApiWasInvoked(initOrderResponse, orderRequest, retailBengaluruBpp)
         verifyThatSubscriberLookupApiWasInvoked(registryBppLookupApi, retailBengaluruBpp)
       }
@@ -104,14 +99,12 @@ class InitOrderControllerSpec @Autowired constructor(
           .andReturn()
           .response.contentAsString
 
-        val initOrderResponse =
-          verifyInitResponseMessage(
-            initOrderResponseString,
-            orderRequestWithMultipleBppItems,
-            ResponseMessage.nack(),
-            ProtocolError("BAP_014", "More than one BPP's item(s) selected/initialized")
-          )
-        verifyThatMessageWasNotPersisted(initOrderResponse)
+        verifyInitResponseMessage(
+          initOrderResponseString,
+          orderRequestWithMultipleBppItems,
+          ResponseMessage.nack(),
+          ProtocolError("BAP_014", "More than one BPP's item(s) selected/initialized")
+        )
         verifyThatBppInitApiWasNotInvoked(retailBengaluruBpp)
         verifyThatSubscriberLookupApiWasNotInvoked(registryBppLookupApi)
         verifyThatSubscriberLookupApiWasNotInvoked(anotherRetailBengaluruBpp)
@@ -133,14 +126,12 @@ class InitOrderControllerSpec @Autowired constructor(
           .andReturn()
           .response.contentAsString
 
-        val initOrderResponse =
-          verifyInitResponseMessage(
-            initOrderResponseString,
-            orderRequestWithMultipleProviderItems,
-            ResponseMessage.nack(),
-            ProtocolError("BAP_010", "More than one Provider's item(s) selected/initialized")
-          )
-        verifyThatMessageWasNotPersisted(initOrderResponse)
+        verifyInitResponseMessage(
+          initOrderResponseString,
+          orderRequestWithMultipleProviderItems,
+          ResponseMessage.nack(),
+          ProtocolError("BAP_010", "More than one Provider's item(s) selected/initialized")
+        )
         verifyThatBppInitApiWasNotInvoked(retailBengaluruBpp)
         verifyThatSubscriberLookupApiWasNotInvoked(registryBppLookupApi)
         verifyThatSubscriberLookupApiWasNotInvoked(anotherRetailBengaluruBpp)
@@ -166,9 +157,7 @@ class InitOrderControllerSpec @Autowired constructor(
           .andReturn()
           .response.contentAsString
 
-        val confirmOrderResponse =
-          verifyInitResponseMessage(initOrderResponseString, initRequestForTest, ResponseMessage.ack())
-        verifyThatMessageWasNotPersisted(confirmOrderResponse)
+        verifyInitResponseMessage(initOrderResponseString, initRequestForTest, ResponseMessage.ack())
         verifyThatBppInitApiWasNotInvoked(retailBengaluruBpp)
         verifyThatSubscriberLookupApiWasNotInvoked(registryBppLookupApi)
       }
@@ -200,7 +189,6 @@ class InitOrderControllerSpec @Autowired constructor(
 
         val confirmOrderResponse =
           verifyInitResponseMessage(initOrderResponseString, initRequestForTest, ResponseMessage.ack())
-        verifyThatMessageWasPersisted(confirmOrderResponse)
         verifyThatBppInitApiWasInvoked(confirmOrderResponse, initRequestForTest, retailBengaluruBpp)
         verifyThatSubscriberLookupApiWasInvoked(registryBppLookupApi, retailBengaluruBpp)
       }
@@ -327,16 +315,6 @@ class InitOrderControllerSpec @Autowired constructor(
         )
       )
     )
-  }
-
-  private fun verifyThatMessageWasPersisted(initOrderResponse: ProtocolAckResponse) {
-    val savedMessage = messageRepository.findOne(MessageDao::id eq initOrderResponse.context?.messageId)
-    savedMessage shouldNotBe null
-  }
-
-  private fun verifyThatMessageWasNotPersisted(initOrderResponse: ProtocolAckResponse) {
-    val savedMessage = messageRepository.findOne(MessageDao::id eq initOrderResponse.context?.messageId)
-    savedMessage shouldBe null
   }
 
   private fun invokeInitOrder(orderRequest: OrderRequestDto) = mockMvc.perform(

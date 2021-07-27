@@ -1,5 +1,6 @@
 package org.beckn.one.sandbox.bap.client.order.confirm.controllers
 
+import org.beckn.one.sandbox.bap.client.external.bap.ProtocolClient
 import org.beckn.one.sandbox.bap.client.shared.controllers.AbstractOnPollController
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientConfirmResponse
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientResponse
@@ -16,12 +17,13 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class OnConfirmOrderController @Autowired constructor(
   onPollService: GenericOnPollService<ProtocolOnConfirm, ClientConfirmResponse>,
-  contextFactory: ContextFactory
+  contextFactory: ContextFactory,
+  val protocolClient: ProtocolClient
 ) : AbstractOnPollController<ProtocolOnConfirm, ClientConfirmResponse>(onPollService, contextFactory) {
 
   @RequestMapping("/client/v1/on_confirm_order")
   @ResponseBody
   fun onConfirmOrderV1(
     @RequestParam messageId: String
-  ): ResponseEntity<out ClientResponse> = onPoll(messageId)
+  ): ResponseEntity<out ClientResponse> = onPoll(messageId, protocolClient.getConfirmResponsesCall(messageId))
 }

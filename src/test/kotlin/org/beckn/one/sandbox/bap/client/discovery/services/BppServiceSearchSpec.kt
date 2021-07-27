@@ -41,7 +41,7 @@ internal class BppServiceSearchSpec : DescribeSpec() {
       }
 
       it("should return bpp internal server error when bpp search call fails with an exception") {
-        val criteria = SearchCriteria(providerId = "venugopala stores", location = "venugopala stores location 1")
+        val criteria = SearchCriteria(providerId = "venugopala stores", deliveryLocation = "venugopala stores location 1")
         `when`(bppServiceClient.search(getSearchRequest(context, criteria))).thenReturn(
           Calls.failure(IOException("Timeout"))
         )
@@ -53,7 +53,7 @@ internal class BppServiceSearchSpec : DescribeSpec() {
       }
 
       it("should return bpp internal server error when bpp search call returns null body") {
-        val criteria = SearchCriteria(providerId = "venugopala stores", location = "venugopala stores location 1")
+        val criteria = SearchCriteria(providerId = "venugopala stores", deliveryLocation = "venugopala stores location 1")
         `when`(bppServiceClient.search(getSearchRequest(context, criteria))).thenReturn(
           Calls.response(null)
         )
@@ -65,7 +65,7 @@ internal class BppServiceSearchSpec : DescribeSpec() {
       }
 
       it("should return bpp internal server error when bpp search call returns nack response body") {
-        val criteria = SearchCriteria(providerId = "venugopala stores", location = "venugopala stores location 1")
+        val criteria = SearchCriteria(providerId = "venugopala stores", deliveryLocation = "venugopala stores location 1")
         `when`(bppServiceClient.search(getSearchRequest(context, criteria))).thenReturn(
           Calls.response(ProtocolAckResponse(context, ResponseMessage.nack()))
         )
@@ -81,5 +81,5 @@ internal class BppServiceSearchSpec : DescribeSpec() {
   private fun getSearchRequest(
     context: ProtocolContext,
     criteria: SearchCriteria
-  ) = SearchRequestFactory.create(context = context, providerId = criteria.providerId, location = criteria.location)
+  ) = SearchRequestFactory.create(context = context, providerId = criteria.providerId, location = criteria.deliveryLocation)
 }

@@ -16,12 +16,9 @@ import org.beckn.one.sandbox.bap.common.Domain
 import org.beckn.one.sandbox.bap.common.factories.MockNetwork
 import org.beckn.one.sandbox.bap.common.factories.ResponseFactory
 import org.beckn.one.sandbox.bap.common.factories.SubscriberDtoFactory
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.repositories.GenericRepository
 import org.beckn.one.sandbox.bap.schemas.factories.ContextFactory
 import org.beckn.one.sandbox.bap.schemas.factories.UuidFactory
 import org.beckn.protocol.schemas.*
-import org.litote.kmongo.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -41,7 +38,6 @@ class SupportControllerSpec @Autowired constructor(
   val objectMapper: ObjectMapper,
   val contextFactory: ContextFactory,
   val uuidFactory: UuidFactory,
-  val messageRepository: GenericRepository<MessageDao>
 ) : DescribeSpec()  {
   init {
     describe("Get support details from BPP") {
@@ -74,7 +70,6 @@ class SupportControllerSpec @Autowired constructor(
             ResponseMessage.nack(),
             ProtocolError("BAP_011", "BPP returned error")
           )
-        verifyThatMessageWasNotPersisted(supportResponse)
         verifyThatBppSupportApiWasInvoked(supportResponse, supportRequest, MockNetwork.retailBengaluruBpp)
         verifyThatSubscriberLookupApiWasInvoked(MockNetwork.registryBppLookupApi, MockNetwork.retailBengaluruBpp)
       }
@@ -94,10 +89,11 @@ class SupportControllerSpec @Autowired constructor(
 
         val supportResponse =
           verifySupportResponseMessage(supportResponseString, supportRequest, ResponseMessage.ack())
-        verifyThatMessageWasPersisted(supportResponse)
         verifyThatBppSupportApiWasInvoked(supportResponse, supportRequest, MockNetwork.retailBengaluruBpp)
         verifyThatSubscriberLookupApiWasInvoked(MockNetwork.registryBppLookupApi, MockNetwork.retailBengaluruBpp)
       }
+
+      MockNetwork.registryBppLookupApi.stop()
 
     }
   }
@@ -130,16 +126,6 @@ class SupportControllerSpec @Autowired constructor(
       org.springframework.http.HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE
     ).content(objectMapper.writeValueAsString(supportRequest)).param("signature", "abc")
   )
-
-  private fun verifyThatMessageWasPersisted(supportResponse: ProtocolAckResponse) {
-    val savedMessage = messageRepository.findOne(MessageDao::id eq supportResponse.context?.messageId)
-    savedMessage shouldNotBe null
-  }
-
-  private fun verifyThatMessageWasNotPersisted(supportResponse: ProtocolAckResponse) {
-    val savedMessage = messageRepository.findOne(MessageDao::id eq supportResponse.context?.messageId)
-    savedMessage shouldBe null
-  }
 
   private fun verifyThatSubscriberLookupApiWasInvoked(
     registryBppLookupApi: WireMockServer,

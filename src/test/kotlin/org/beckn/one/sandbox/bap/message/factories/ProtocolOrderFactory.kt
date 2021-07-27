@@ -1,6 +1,5 @@
 package org.beckn.one.sandbox.bap.message.factories
 
-import org.beckn.one.sandbox.bap.message.entities.*
 import org.beckn.protocol.schemas.*
 import java.time.OffsetDateTime
 
@@ -28,33 +27,6 @@ object ProtocolOrderFactory {
       state = "IN_PROGRESS",
       createdAt = OffsetDateTime.now(fixedClock),
       updatedAt = OffsetDateTime.now(fixedClock)
-    )
-  }
-
-  fun createAsEntity(protocol: ProtocolOrder?) = protocol.let {
-    OrderDao(
-      provider = protocol?.provider?.let { p ->
-        SelectMessageSelectedProviderDao(
-          id = p.id,
-          locations = p.locations?.map { l -> SelectMessageSelectedProviderLocationsDao(l.id) }
-        )
-      }!!,
-      items = protocol.items.map { i ->
-        SelectMessageSelectedItemsDao(
-          id = i.id,
-          quantity = ItemQuantityAllocatedDao(count = i.quantity.count)
-        )
-      },
-      addOns = listOf(),
-      offers = listOf(),
-      billing = ProtocolBillingFactory.createAsEntity(it?.billing)!!,
-      fulfillment = ProtocolFulfillmentFactory.createAsEntity(it?.fulfillment)!!,
-      quote = ProtocolQuotationFactory.createAsEntity(it?.quote)!!,
-      payment = ProtocolPaymentFactory.createAsEntity(it?.payment)!!,
-      id = it?.id,
-      state = it?.state,
-      createdAt = it?.createdAt,
-      updatedAt = it?.updatedAt
     )
   }
 }

@@ -1,6 +1,5 @@
 package org.beckn.one.sandbox.bap.message.factories
 
-import org.beckn.one.sandbox.bap.message.entities.DescriptorDao
 import org.beckn.protocol.schemas.ProtocolDescriptor
 
 object ProtocolDescriptorFactory {
@@ -15,19 +14,4 @@ object ProtocolDescriptorFactory {
     audio = "$type-$id-image-audio-file-path",
     threeDRender = "$type-$id-3d"
   )
-
-  fun createAsEntity(protocol: ProtocolDescriptor?) = protocol?.let {
-    DescriptorDao(
-      name = protocol.name,
-      code = protocol.code,
-      symbol = protocol.symbol,
-      shortDesc = protocol.shortDesc,
-      longDesc = protocol.longDesc,
-      images = protocol.images,
-      audio = protocol.audio,
-      threeDRender = protocol.threeDRender
-    )
-  }
-
-
 }

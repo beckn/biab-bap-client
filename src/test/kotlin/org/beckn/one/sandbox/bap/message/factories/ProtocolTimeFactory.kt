@@ -1,7 +1,5 @@
 package org.beckn.one.sandbox.bap.message.factories
 
-import org.beckn.one.sandbox.bap.message.entities.TimeDao
-import org.beckn.one.sandbox.bap.message.entities.TimeRangeDao
 import org.beckn.protocol.schemas.ProtocolTime
 import org.beckn.protocol.schemas.ProtocolTimeRange
 import java.time.Clock
@@ -32,22 +30,6 @@ object ProtocolTimeFactory {
       end = OffsetDateTime.now(fixedClock).plusDays(2)
     )
   )
-
-  fun timeAsEntity(protocol: ProtocolTime?) = protocol?.let {
-    TimeDao(
-      label = protocol.label,
-      timestamp = protocol.timestamp?.toInstant(),
-      duration = protocol.duration,
-      days = protocol.days,
-      range = protocol.range?.let {
-        TimeRangeDao(
-          start = it.start?.toInstant(),
-          end = it.end?.toInstant()
-        )
-      }
-    )
-  }
-
 }
 
 val fixedClock: Clock = Clock.fixed(

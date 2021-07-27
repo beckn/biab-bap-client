@@ -9,8 +9,7 @@ import org.beckn.one.sandbox.bap.client.shared.errors.CartError
 import org.beckn.one.sandbox.bap.client.shared.services.BppService
 import org.beckn.one.sandbox.bap.client.shared.services.RegistryService
 import org.beckn.one.sandbox.bap.errors.HttpError
-import org.beckn.one.sandbox.bap.message.entities.MessageDao
-import org.beckn.one.sandbox.bap.message.services.MessageService
+import org.beckn.protocol.schemas.ProtocolAckResponse
 import org.beckn.protocol.schemas.ProtocolContext
 import org.beckn.protocol.schemas.ProtocolLocation
 import org.slf4j.Logger
@@ -20,14 +19,13 @@ import org.springframework.stereotype.Service
 
 @Service
 class QuoteService @Autowired constructor(
-  private val messageService: MessageService,
   private val registryService: RegistryService,
   private val bppService: BppService,
   private val selectedItemMapper: SelectedItemMapper,
 ) {
   private val log: Logger = LoggerFactory.getLogger(QuoteService::class.java)
 
-  fun getQuote(context: ProtocolContext, cart: CartDto): Either<HttpError, MessageDao?> {
+  fun getQuote(context: ProtocolContext, cart: CartDto): Either<HttpError, ProtocolAckResponse?> {
     log.info("Got get quote request. Context: {}, Cart: {}", context, cart)
     if (cart.items.isNullOrEmpty()) {
       log.info("Empty cart received, not doing anything. Cart: {}", cart)
@@ -54,7 +52,6 @@ class QuoteService @Autowired constructor(
           items = cart.items.map { cartItem -> selectedItemMapper.dtoToProtocol(cartItem) }
         )
       }
-      .flatMap { messageService.save(MessageDao(id = context.messageId, type = MessageDao.Type.Select)) }
   }
 
   private fun areMultipleProviderItemsSelected(items: List<CartItemDto>) =
