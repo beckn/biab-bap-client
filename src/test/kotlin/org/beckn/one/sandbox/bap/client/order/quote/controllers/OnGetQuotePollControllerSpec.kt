@@ -1,12 +1,14 @@
 package org.beckn.one.sandbox.bap.client.order.quote.controllers
 
 import arrow.core.Either
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.client.WireMock
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.beckn.one.sandbox.bap.client.external.bap.ProtocolClient
+import org.beckn.one.sandbox.bap.client.shared.dtos.ClientInitResponse
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientQuoteResponse
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
 import org.beckn.one.sandbox.bap.common.factories.MockProtocolBap
@@ -32,7 +34,7 @@ import java.time.Instant
 import java.time.ZoneId
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 internal class OnGetQuotePollControllerSpec @Autowired constructor(
@@ -41,7 +43,6 @@ internal class OnGetQuotePollControllerSpec @Autowired constructor(
   private val protocolClient: ProtocolClient,
   private val mockMvc: MockMvc
 ) : DescribeSpec() {
-
   private val fixedClock = Clock.fixed(
     Instant.parse("2018-11-30T18:35:24.00Z"),
     ZoneId.of("UTC")
@@ -88,7 +89,7 @@ internal class OnGetQuotePollControllerSpec @Autowired constructor(
         }
         val onSelectPollController = OnGetQuotePollController(mockOnPollService, contextFactory, protocolClient)
         it("should respond with failure") {
-          val response = onSelectPollController.onGetQuote(context.messageId)
+          val response = onSelectPollController.onGetQuoteV1(context.messageId)
           response.statusCode shouldBe DatabaseError.OnRead.status()
         }
       }

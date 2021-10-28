@@ -11,6 +11,7 @@ import org.beckn.one.sandbox.bap.factories.CircuitBreakerFactory
 import org.beckn.one.sandbox.bap.factories.RetryFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import retrofit2.Retrofit
@@ -30,6 +31,7 @@ class BapClientConfiguration(
   @Value("\${protocol_service.timeouts.connection_in_seconds}") private val connectionTimeoutInSeconds: Long,
   @Value("\${protocol_service.timeouts.read_in_seconds}") private val readTimeoutInSeconds: Long,
   @Value("\${protocol_service.timeouts.write_in_seconds}") private val writeTimeoutInSeconds: Long,
+
   @Autowired private val objectMapper: ObjectMapper
 ) {
   @Bean

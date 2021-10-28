@@ -6,15 +6,19 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.beckn.one.sandbox.bap.auth.model.User
 import org.beckn.one.sandbox.bap.client.external.bap.ProtocolClient
+import org.beckn.one.sandbox.bap.client.order.confirm.services.OnConfirmOrderService
 import org.beckn.one.sandbox.bap.client.shared.dtos.ClientConfirmResponse
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
 import org.beckn.one.sandbox.bap.common.factories.MockProtocolBap
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
 import org.beckn.one.sandbox.bap.factories.ContextFactory
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOrderFactory
+import org.beckn.one.sandbox.bap.message.mappers.OnOrderProtocolToEntityOrder
 import org.beckn.protocol.schemas.ProtocolOnConfirm
 import org.beckn.protocol.schemas.ProtocolOnConfirmMessage
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +26,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
@@ -29,14 +37,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 internal class OnConfirmOrderControllerSpec @Autowired constructor(
-    private val contextFactory: ContextFactory,
-    private val mapper: ObjectMapper,
-    private val protocolClient: ProtocolClient,
-    private val mockMvc: MockMvc
+  private val contextFactory: ContextFactory,
+  private val mapper: ObjectMapper,
+  private val protocolClient: ProtocolClient,
+  private val mockMvc: MockMvc,
+  private val mapping: OnOrderProtocolToEntityOrder,
+  private val onConfirmOrderService: OnConfirmOrderService
 ) : DescribeSpec() {
   val context = contextFactory.create()
   private val protocolOnConfirm = ProtocolOnConfirm(
@@ -78,7 +88,7 @@ internal class OnConfirmOrderControllerSpec @Autowired constructor(
         val mockOnPollService = mock<GenericOnPollService<ProtocolOnConfirm, ClientConfirmResponse>> {
           onGeneric { onPoll(any(), any()) }.thenReturn(Either.Left(DatabaseError.OnRead))
         }
-        val onConfirmPollController = OnConfirmOrderController(mockOnPollService, contextFactory, protocolClient)
+        val onConfirmPollController = OnConfirmOrderController(mockOnPollService, contextFactory, protocolClient,mapping,onConfirmOrderService)
         it("should respond with failure") {
           val response = onConfirmPollController.onConfirmOrderV1(context.messageId)
           response.statusCode shouldBe DatabaseError.OnRead.status()

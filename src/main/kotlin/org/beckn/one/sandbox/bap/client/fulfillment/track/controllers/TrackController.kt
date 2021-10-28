@@ -6,10 +6,12 @@ import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.one.sandbox.bap.factories.ContextFactory
 import org.beckn.protocol.schemas.ProtocolAckResponse
 import org.beckn.protocol.schemas.ProtocolContext
+import org.beckn.protocol.schemas.ProtocolError
 import org.beckn.protocol.schemas.ResponseMessage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -38,6 +40,44 @@ class TrackController @Autowired constructor(
           ResponseEntity.ok(ProtocolAckResponse(context = context, message = ResponseMessage.ack()))
         }
       )
+  }
+
+  @RequestMapping("/client/v2/track")
+  @ResponseBody
+  fun trackV2(@RequestBody trackRequestList: List<TrackRequestDto>): ResponseEntity<List<ProtocolAckResponse>> {
+
+    if(!trackRequestList.isNullOrEmpty()){
+      var okResponseTrack : MutableList<ProtocolAckResponse> = ArrayList()
+      for (trackRequest in trackRequestList) {
+        val context = contextFactory.create(action = ProtocolContext.Action.TRACK)
+        trackService.track(context, trackRequest)
+          .fold(
+            {
+              log.error("Error when getting tracking information: {}", it)
+              okResponseTrack.add( ProtocolAckResponse(
+                context = context,
+                message = it.message(),
+                error = it.error()
+              ))
+            },
+            {
+              log.info("Successfully initiated track api. Message: {}", it)
+              okResponseTrack.add(ProtocolAckResponse(context = context, message = ResponseMessage.ack()))
+            }
+          )
+      }
+      return ResponseEntity.ok(okResponseTrack)
+    }else{
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(
+          listOf(
+            ProtocolAckResponse(
+              context = null, message = ResponseMessage.nack(),
+              error = ProtocolError(code = "400", message = HttpStatus.BAD_REQUEST.reasonPhrase)
+            )
+          )
+        )
+    }
   }
 
   private fun mapToErrorResponse(it: HttpError, context: ProtocolContext) = ResponseEntity

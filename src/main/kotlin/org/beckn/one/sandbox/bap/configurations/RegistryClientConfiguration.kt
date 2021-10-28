@@ -36,6 +36,7 @@ class RegistryClientConfiguration(
   @Value("\${registry_service.timeouts.connection_in_seconds}") private val connectionTimeoutInSeconds: Long,
   @Value("\${registry_service.timeouts.read_in_seconds}") private val readTimeoutInSeconds: Long,
   @Value("\${registry_service.timeouts.write_in_seconds}") private val writeTimeoutInSeconds: Long,
+
   @Autowired
   private val objectMapper: ObjectMapper,
   @Autowired

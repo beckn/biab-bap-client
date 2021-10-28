@@ -31,6 +31,7 @@ repositories {
 }
 
 dependencies {
+  implementation("org.projectlombok:lombok:1.18.20")
   val retrofitVersion = "2.9.+"
   val resilience4jVersion = "1.7.+"
 
@@ -57,6 +58,12 @@ dependencies {
   implementation("io.github.resilience4j:resilience4j-circuitbreaker:$resilience4jVersion")
   implementation("org.bouncycastle:bcprov-jdk15on:1.69")
   implementation("commons-codec:commons-codec:1.15")
+  implementation("org.springframework.boot:spring-boot-starter-security")
+  implementation("org.springframework.security:spring-security-test")
+  implementation("io.jsonwebtoken:jjwt:0.9.1")
+  implementation("jakarta.xml.bind:jakarta.xml.bind-api:2.3.2")
+  implementation("com.google.firebase:firebase-admin:8.1.0")
+  implementation("org.litote.kmongo:kmongo:4.2.8")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("io.kotest:kotest-runner-junit5:4.4.3")
@@ -64,6 +71,8 @@ dependencies {
   testImplementation("com.github.tomakehurst:wiremock-jre8:2.28.0")
   testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
   testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.0.2")
+  testImplementation("org.testcontainers:mongodb:1.15.3")
+
 }
 
 tasks.withType<KotlinCompile> {

@@ -14,6 +14,14 @@ import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollMapper
 import org.beckn.one.sandbox.bap.client.shared.services.GenericOnPollService
 import org.beckn.one.sandbox.bap.client.shared.services.GenericProtocolClientService
 import org.beckn.one.sandbox.bap.client.support.mappers.SupportClientResponseMapper
+import org.beckn.one.sandbox.bap.message.entities.AccountDetailsDao
+import org.beckn.one.sandbox.bap.message.entities.AddDeliveryAddressDao
+import org.beckn.one.sandbox.bap.message.entities.BillingDetailsDao
+import org.beckn.one.sandbox.bap.message.entities.OrderDao
+import org.beckn.one.sandbox.bap.message.mappers.GenericResponseMapper
+import org.beckn.one.sandbox.bap.message.repositories.BecknResponseRepository
+import org.beckn.one.sandbox.bap.message.services.ResponseStorageService
+import org.beckn.one.sandbox.bap.message.services.ResponseStorageServiceImpl
 import org.beckn.protocol.schemas.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -21,7 +29,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class ClientServicesConfiguration @Autowired constructor(
-  private val clientCatalogMapper: ClientCatalogMapper
+  private val clientCatalogMapper: ClientCatalogMapper,
 ) {
   @Bean
   fun forSearchResults(): GenericOnPollMapper<ProtocolOnSearch, ClientSearchResponse> =
@@ -133,4 +141,29 @@ class ClientServicesConfiguration @Autowired constructor(
     @Autowired protocolService: GenericProtocolClientService<ProtocolOnCancel>,
     @Autowired transformer: GenericOnPollMapper<ProtocolOnCancel, ClientCancelResponse>
   ) = GenericOnPollService(protocolService, transformer)
+
+  @Bean
+  fun addDeliveryAddressRepo(
+    @Autowired responseRepository: BecknResponseRepository<AddDeliveryAddressDao>,
+    @Autowired mapper: GenericResponseMapper<DeliveryAddressResponse, AddDeliveryAddressDao>,
+  ): ResponseStorageService<DeliveryAddressResponse, AddDeliveryAddressDao> = ResponseStorageServiceImpl(responseRepository,mapper)
+
+  @Bean
+  fun setBillingDetailsRepo(
+    @Autowired responseRepository: BecknResponseRepository<BillingDetailsDao>,
+    @Autowired mapper: GenericResponseMapper<BillingDetailsResponse, BillingDetailsDao>,
+  ): ResponseStorageService<BillingDetailsResponse, BillingDetailsDao> = ResponseStorageServiceImpl(responseRepository,mapper)
+
+  @Bean
+  fun setAccountDetailsRepo(
+    @Autowired responseRepository: BecknResponseRepository<AccountDetailsDao>,
+    @Autowired mapper: GenericResponseMapper<AccountDetailsResponse, AccountDetailsDao>,
+  ): ResponseStorageService<AccountDetailsResponse, AccountDetailsDao> = ResponseStorageServiceImpl(responseRepository,mapper)
+
+  @Bean
+  fun setOrderProtocolToDao(
+    @Autowired responseRepository: BecknResponseRepository<OrderDao>,
+    @Autowired mapper: GenericResponseMapper<OrderResponse, OrderDao>,
+  ): ResponseStorageService<OrderResponse, OrderDao> = ResponseStorageServiceImpl(responseRepository,mapper)
+
 }

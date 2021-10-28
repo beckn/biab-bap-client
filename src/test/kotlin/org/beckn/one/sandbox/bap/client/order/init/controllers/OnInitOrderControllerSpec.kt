@@ -1,6 +1,7 @@
 package org.beckn.one.sandbox.bap.client.order.init.controllers
 
 import arrow.core.Either
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.client.WireMock
 import io.kotest.core.spec.style.DescribeSpec
@@ -13,6 +14,7 @@ import org.beckn.one.sandbox.bap.common.factories.MockProtocolBap
 import org.beckn.one.sandbox.bap.errors.database.DatabaseError
 import org.beckn.one.sandbox.bap.factories.ContextFactory
 import org.beckn.one.sandbox.bap.message.factories.ProtocolOnInitMessageInitializedFactory
+import org.beckn.protocol.schemas.ProtocolAckResponse
 import org.beckn.protocol.schemas.ProtocolOnInit
 import org.beckn.protocol.schemas.ProtocolOnInitMessage
 import org.mockito.kotlin.any
@@ -29,7 +31,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 internal class OnInitOrderControllerSpec @Autowired constructor(

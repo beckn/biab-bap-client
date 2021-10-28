@@ -5,7 +5,7 @@ import org.beckn.protocol.schemas.ProtocolError
 import org.beckn.protocol.schemas.ProtocolOnSelectMessageSelected
 
 data class ClientQuoteResponse(
-  override val context: ProtocolContext,
+  override val context: ProtocolContext?,
   val message: ClientQuoteResponseMessage? = null,
   override val error: ProtocolError? = null,
 ) : ClientResponse

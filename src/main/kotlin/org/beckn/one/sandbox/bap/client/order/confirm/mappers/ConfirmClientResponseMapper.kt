@@ -7,16 +7,21 @@ import org.beckn.one.sandbox.bap.errors.HttpError
 import org.beckn.protocol.schemas.ProtocolContext
 import org.beckn.protocol.schemas.ProtocolOnConfirm
 
+
 class ConfirmClientResponseMapper : GenericOnPollMapper<ProtocolOnConfirm, ClientConfirmResponse> {
   override fun transform(
     input: List<ProtocolOnConfirm>,
     context: ProtocolContext
-  ): Either<HttpError, ClientConfirmResponse> =
-    Either.Right(
-      ClientConfirmResponse(
-        context = context,
-        message = input.firstOrNull()?.message,
-        error = input.firstOrNull()?.error
-      )
-    )
+  ): Either<HttpError, ClientConfirmResponse> {
+       return  Either.Right(
+          ClientConfirmResponse(
+            context = context,
+            message = input.firstOrNull()?.message,
+            error = input.firstOrNull()?.error
+          )
+        )
+
+  }
+
 }
+

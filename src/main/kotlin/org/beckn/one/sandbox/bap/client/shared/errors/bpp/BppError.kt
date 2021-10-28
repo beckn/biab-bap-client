@@ -11,6 +11,8 @@ sealed class BppError : HttpError {
   val nackError = ProtocolError("BAP_013", "BPP returned nack")
   val pendingPaymentError = ProtocolError("BAP_015", "BAP hasn't received payment yet")
   val bppIdNotPresent = ProtocolError("BAP_016", "BPP Id is mandatory")
+  val autheticationError = ProtocolError("BAP_401", "Invalid Credentials")
+  val badRequestError = ProtocolError("BAP_404", "Bad Request")
 
   object Internal : BppError() {
     override fun status(): HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
@@ -50,5 +52,21 @@ sealed class BppError : HttpError {
     override fun message(): ResponseMessage = ResponseMessage.nack()
 
     override fun error(): ProtocolError = bppIdNotPresent
+  }
+
+  object AuthenticationError : BppError() {
+    override fun status(): HttpStatus = HttpStatus.UNAUTHORIZED
+
+    override fun message(): ResponseMessage = ResponseMessage.nack()
+
+    override fun error(): ProtocolError = autheticationError
+  }
+
+  object BadRequestError : BppError() {
+    override fun status(): HttpStatus = HttpStatus.BAD_REQUEST
+
+    override fun message(): ResponseMessage = ResponseMessage.nack()
+
+    override fun error(): ProtocolError = badRequestError
   }
 }

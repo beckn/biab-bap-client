@@ -33,7 +33,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 internal class OnSearchPollControllerSpec @Autowired constructor(

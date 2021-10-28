@@ -61,12 +61,72 @@ context:
   bap_uri: https://qa.api.box.beckn.org/bap/protocol/v1
   ttl_seconds: 20
 beckn:
-  security.enabled: true
+  security.enabled: false
 security:
   self:
     private_key: {{ private_key }}
     unique_key_id: key1
     public_key: {{ public_key }}
+  firebase-props:
+    enable-strict-server-session: false
+    enable-check-session-revoked: false
+    enable-logout-everywhere: false
+    session-expiry-in-days: 5
+  allow-credentials: true
+  allowed-origins:
+    - http://localhost:9001
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  allowed-headers:
+    - Authorization
+    - Origin
+    - Content-Type
+    - Accept
+    - Accept-Encoding
+    - Accept-Language
+    - Access-Control-Allow-Origin
+    - Access-Control-Allow-Headers
+    - Access-Control-Request-Method
+    - X-Requested-With
+    - X-Auth-Token
+    - X-Xsrf-Token
+    - Cache-Control
+    - Id-Token
+  allowed-public-apis:
+    - /favicon.ico
+    - /session/login
+    - /public/**
+  exposed-headers:
+    - X-Xsrf-Token
+  protected-actions:
+    - /**/select
+    - /**/initialize_order
+    - /**/on_initialize_order
+    - /**/confirm_order
+    - /**/on_confirm_order
+    - /**/get_quote
+    - /**/on_get_quote
+    - /**/orders
+    - /**/on_rating
+    - /**/rating
+    - /**/update
+    - /**/cancel_order
+    - /**/on_cancel_order
+    - /**/on_track
+    - /**/track
+    - /**/on_order_status
+    - /**/order_status
+    - /**/delivery_address
+    - /**/confirm_order
+    - /**/billing_details
+    - /**/account_details
+    - /**/on_support
+    - /**/get_support
 database:
   mongo:
     url: mongodb://{{ mongo_host }}:{{ mongo_port }}

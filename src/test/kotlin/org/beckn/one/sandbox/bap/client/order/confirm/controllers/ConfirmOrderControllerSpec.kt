@@ -1,11 +1,13 @@
 package org.beckn.one.sandbox.bap.client.order.confirm.controllers
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.beckn.one.sandbox.bap.auth.model.User
 import org.beckn.one.sandbox.bap.client.external.domains.Subscriber
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberDto
 import org.beckn.one.sandbox.bap.client.external.registry.SubscriberLookupRequest
@@ -25,25 +27,31 @@ import org.beckn.one.sandbox.bap.common.factories.SubscriberDtoFactory
 import org.beckn.one.sandbox.bap.factories.ContextFactory
 import org.beckn.one.sandbox.bap.factories.UuidFactory
 import org.beckn.protocol.schemas.*
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
+
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles(value = ["test"])
 @TestPropertySource(locations = ["/application-test.yml"])
 class ConfirmOrderControllerSpec @Autowired constructor(
-    val mockMvc: MockMvc,
-    val objectMapper: ObjectMapper,
-    val contextFactory: ContextFactory,
-    val uuidFactory: UuidFactory
+  val mockMvc: MockMvc,
+  val objectMapper: ObjectMapper,
+  val contextFactory: ContextFactory,
+  val uuidFactory: UuidFactory
 ) : DescribeSpec() {
   init {
     describe("Confirm order with BPP") {

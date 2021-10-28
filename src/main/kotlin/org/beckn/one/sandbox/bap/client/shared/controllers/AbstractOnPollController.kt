@@ -23,7 +23,7 @@ open class AbstractOnPollController<Protocol: ProtocolResponse, Output: ClientRe
     .onPoll(contextFactory.create(messageId = messageId), call)
     .fold(
       {
-        log.error("Error when finding search response by message id. Error: {}", it)
+        log.error("Error when finding response by message id. Error: {}", it)
         ResponseEntity
           .status(it.status().value())
           .body(ClientErrorResponse(context = contextFactory.create(messageId = messageId), error = it.error()))
