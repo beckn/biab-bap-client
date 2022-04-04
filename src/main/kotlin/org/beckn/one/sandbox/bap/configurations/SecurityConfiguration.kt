@@ -2,6 +2,7 @@ package org.beckn.one.sandbox.bap.configurations
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.common.collect.Lists
 import org.beckn.one.sandbox.bap.auth.model.SecurityProperties
 import org.beckn.one.sandbox.bap.auth.utils.JwtRequestFilter
 import org.springframework.beans.factory.annotation.Autowired
@@ -59,7 +60,7 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = restSecProps!!.allowedOrigins
+        configuration.allowedOriginPatterns = listOf("*")
         configuration.allowedMethods = restSecProps!!.allowedMethods
         configuration.allowedHeaders = restSecProps!!.allowedHeaders
         configuration.allowCredentials = restSecProps!!.allowCredentials

@@ -12,13 +12,8 @@ spring:
     property-naming-strategy: SNAKE_CASE
     default-property-inclusion: non_null
 
-database:
-  mongo:
-    url: ${DATABASE_URL:mongodb://localhost:27017}
-    name: ${DATABASE_NAME:sandbox_client}
-
 registry_service:
-  url: ${REGISTRY_URL:https://beckn-one.succinct.in/subscribers/}
+  url: ${REGISTRY_URL:https://pilot-gateway-1.beckn.nsdl.co.in/}
   retry:
     max_attempts: ${REGISTRY_RETRY_MAX_ATTEMPTS:3}
     initial_interval_in_millis: ${REGISTRY_RETRY_INTERVAL:1000}
@@ -41,7 +36,7 @@ gateway_service:
     read_in_seconds: ${GATEWAY_READ_TIMEOUT:10}
     write_in_seconds: ${GATEWAY_WRITE_TIMEOUT:10}
 bpp_registry_service:
-  url: ${BPP_URL:https://beckn-one.succinct.in/subscribers/}
+  url: ${BPP_URL:https://pilot-gateway-1.beckn.nsdl.co.in/}
 bpp_service:
   retry:
     max_attempts: ${BPP_RETRY_MAX_ATTEMPTS:3}
@@ -54,7 +49,7 @@ bpp_service:
     read_in_seconds: ${BPP_READ_TIMEOUT:10}
     write_in_seconds: ${BPP_WRITE_TIMEOUT:10}
 protocol_service:
-  url: ${PROTOCOL_HELPER_URL:http://localhost:9002/}
+  url: http://${PROTOCOL_HOST:locahost}/
   retry:
     max_attempts: ${PROTOCOL_HELPER_RETRY_MAX_ATTEMPTS:3}
     initial_interval_in_millis: ${PROTOCOL_HELPER_RETRY_INTERVAL:1000}
@@ -69,7 +64,7 @@ context:
   city: ${BAP_CITY_CODE:std:080}
   country: ${BAP_COUNTRY_CODE:IND}
   bap_id: ${BAP_ID:box.beckn.org}
-  bap_uri: ${BAP_URL:http://localhost:9002/protocol/v1}
+  bap_uri: http://${PROTOCOL_HOST:locahost:9002}/protocol/v1
   ttl_seconds: ${BAP_TTL:20}
 
 beckn:
@@ -84,8 +79,7 @@ security:
     enable-logout-everywhere: ${FIREBASE_ENABLE_LOGOUT_EVERYWHERE:false}
     session-expiry-in-days: ${FIREBASE_SESSION_EXPIRY:5}
   allow-credentials: ${BECKN_SECURITY_ALLOW_CREDENTIALS:true}
-  allowed-origins:
-    - http://localhost:9001
+  allowed-origins: "*"
   allowed-methods:
     - GET
     - POST
@@ -132,6 +126,11 @@ security:
     - /client/v1/account_details
     - /client/v2/on_support
     - /client/v2/get_support
+
+database:
+  mongo:
+    url: ${DATABASE_URL:mongodb://localhost:27017}
+    name: ${DATABASE_NAME:sandbox_client}
 
 management:
   endpoints:

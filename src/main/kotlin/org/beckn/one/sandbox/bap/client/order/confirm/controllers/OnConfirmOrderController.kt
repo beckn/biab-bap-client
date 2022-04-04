@@ -85,30 +85,30 @@ class OnConfirmOrderController @Autowired constructor(
                         }
                       )
 
-                    }
-                  )
-                } else {
-                  okResponseConfirmOrder.add(
-                    ClientConfirmResponse(
-                      error = DatabaseError.NoDataFound.noDataFoundError,
-                      context = contextFactory.create(messageId = messageId)
-                    )
-                  )
-                }
-              }
-              else -> {
+                  }
+                )
+              } else {
                 okResponseConfirmOrder.add(
                   ClientConfirmResponse(
-                    error = bapResult.body?.error,
+                    error = DatabaseError.NoDataFound.noDataFoundError,
                     context = contextFactory.create(messageId = messageId)
                   )
                 )
               }
             }
+            else -> {
+              okResponseConfirmOrder.add(
+                ClientConfirmResponse(
+                  error = bapResult.body?.error,
+                  context = contextFactory.create(messageId = messageId)
+                )
+              )
+            }
           }
-          log.info("`Initiated and returning onConfirm acknowledgment`. Message: {}", okResponseConfirmOrder)
+        }
+        log.info("`Initiated and returning onConfirm acknowledgment`. Message: {}", okResponseConfirmOrder)
 
-          return ResponseEntity.ok(okResponseConfirmOrder)
+        return ResponseEntity.ok(okResponseConfirmOrder)
       } else {
         return mapToErrorResponse(BppError.BadRequestError)
       }

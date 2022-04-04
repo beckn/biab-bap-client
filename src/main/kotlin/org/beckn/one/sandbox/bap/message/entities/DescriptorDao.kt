@@ -5,6 +5,8 @@ import org.beckn.protocol.schemas.Default
 
 data class DescriptorDao @Default constructor(
   val name: String?,
+  val phone: String? = null,
+  val email: String? = null,
   val code: String? = null,
   val symbol: String? = null,
   val shortDesc: String? = null,
